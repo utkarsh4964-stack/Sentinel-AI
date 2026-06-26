@@ -1,0 +1,652 @@
+# Sentinel AI
+
+# Security Rules & Detection Strategy (Security_Rules.md)
+
+**Version:** 1.0 (MVP)
+
+---
+
+# 1. Purpose
+
+This document defines every security rule supported by Sentinel AI.
+
+It specifies:
+
+* Supported vulnerability classes
+* Detection strategy
+* Detection tools
+* AI reasoning policy
+* Severity mapping
+* Confidence scoring
+* False positive handling
+* Future extensibility
+
+This document is the authoritative reference for all security analysis performed by Sentinel AI.
+
+---
+
+# 2. Security Philosophy
+
+Sentinel follows an **Evidence-First Security Model**.
+
+Security findings originate only from:
+
+* Static analysis tools
+* Dependency scanners
+* Secret scanners
+* Repository metadata
+* Repository architecture
+
+LLMs **never** create vulnerabilities.
+
+LLMs only:
+
+* Explain findings
+* Prioritize findings
+* Recommend remediation
+* Estimate business impact
+
+---
+
+# 3. Detection Pipeline
+
+```text
+Repository
+
+↓
+
+Repository Intelligence
+
+↓
+
+Static Analysis
+
+↓
+
+Secret Detection
+
+↓
+
+Dependency Analysis
+
+↓
+
+Finding Normalization
+
+↓
+
+Evidence Collection
+
+↓
+
+AI Reasoning
+
+↓
+
+Risk Scoring
+
+↓
+
+Report Generation
+```
+
+---
+
+# 4. Supported Severity Levels
+
+| Severity | Description                                       | SLA Recommendation        |
+| -------- | ------------------------------------------------- | ------------------------- |
+| Critical | Immediate exploitation or complete compromise     | Fix immediately           |
+| High     | Serious vulnerability with practical exploitation | Fix within 24 hours       |
+| Medium   | Security weakness with limited impact             | Fix during current sprint |
+| Low      | Minor issue or hardening recommendation           | Fix when convenient       |
+| Info     | Informational finding                             | No immediate action       |
+
+---
+
+# 5. Supported Vulnerability Classes
+
+## Authentication
+
+Examples
+
+* Missing authentication
+* Weak authentication
+* Hardcoded credentials
+* Default passwords
+* Missing MFA (future)
+
+Detection
+
+* Semgrep rules
+* Repository analysis
+* Route inspection
+
+Severity
+
+High / Critical
+
+---
+
+## Authorization
+
+Examples
+
+* Missing authorization
+* Broken access control
+* Insecure Direct Object Reference (IDOR)
+* Privilege escalation
+
+Detection
+
+* Route analysis
+* Decorator inspection
+* Framework-specific rules
+
+Severity
+
+Critical
+
+---
+
+## SQL Injection
+
+Examples
+
+* Raw SQL
+* String concatenation
+* Unsafe ORM queries
+
+Detection
+
+* Semgrep
+* AST analysis
+* Framework rules
+
+Severity
+
+Critical
+
+---
+
+## Command Injection
+
+Examples
+
+* subprocess(shell=True)
+* os.system()
+* Runtime command execution
+
+Detection
+
+* Bandit
+* Semgrep
+
+Severity
+
+Critical
+
+---
+
+## Cross-Site Scripting (XSS)
+
+Examples
+
+* Unsanitized HTML
+* Unsafe template rendering
+* Dangerous DOM manipulation
+
+Detection
+
+* Semgrep
+* Framework-specific rules
+
+Severity
+
+High
+
+---
+
+## Cross-Site Request Forgery (CSRF)
+
+Examples
+
+* Missing CSRF tokens
+* Disabled protection
+
+Detection
+
+* Framework inspection
+
+Severity
+
+High
+
+---
+
+## Hardcoded Secrets
+
+Examples
+
+* API keys
+* AWS credentials
+* Database passwords
+* JWT secrets
+* Private keys
+
+Detection
+
+* Gitleaks
+* Pattern matching
+* Entropy analysis
+
+Severity
+
+Critical
+
+---
+
+## Unsafe File Upload
+
+Examples
+
+* Missing validation
+* Missing MIME checks
+* Executable uploads
+
+Detection
+
+* Route analysis
+* Framework inspection
+
+Severity
+
+High
+
+---
+
+## Path Traversal
+
+Examples
+
+* ../ sequences
+* Unsafe file access
+* Unvalidated paths
+
+Detection
+
+* Semgrep
+* AST inspection
+
+Severity
+
+High
+
+---
+
+## Insecure Deserialization
+
+Examples
+
+* pickle.loads()
+* yaml.load()
+* eval()
+* unsafe object loading
+
+Detection
+
+* Bandit
+* Semgrep
+
+Severity
+
+Critical
+
+---
+
+## Weak Cryptography
+
+Examples
+
+* MD5
+* SHA1
+* ECB mode
+* Weak random generators
+
+Detection
+
+* Semgrep
+* Crypto rule packs
+
+Severity
+
+High
+
+---
+
+## Dependency Vulnerabilities
+
+Examples
+
+* Known CVEs
+* Outdated packages
+* Vulnerable transitive dependencies
+
+Detection
+
+* pip-audit
+* npm audit (future)
+* osv-scanner (future)
+
+Severity
+
+Tool-defined
+
+---
+
+## Security Misconfiguration
+
+Examples
+
+* DEBUG enabled
+* Open CORS
+* Insecure cookies
+* Missing security headers
+
+Detection
+
+* Framework inspection
+* Configuration parsing
+
+Severity
+
+Medium / High
+
+---
+
+# 6. AI-Specific Security Rules
+
+## Prompt Injection
+
+Examples
+
+* Untrusted prompt concatenation
+* User-controlled system prompts
+
+Detection
+
+* Pattern analysis
+* Prompt flow inspection
+
+Severity
+
+High
+
+---
+
+## Tool Injection
+
+Examples
+
+* Unrestricted tool execution
+* Dangerous tool parameters
+
+Detection
+
+* Workflow inspection
+
+Severity
+
+Critical
+
+---
+
+## Prompt Leakage
+
+Examples
+
+* Exposed system prompts
+* Prompt logging
+
+Detection
+
+* Secret scanning
+* Prompt inspection
+
+Severity
+
+Medium
+
+---
+
+## Model Output Injection
+
+Examples
+
+* Unsafe execution of LLM output
+* Direct evaluation of generated code
+
+Detection
+
+* AST inspection
+* Workflow analysis
+
+Severity
+
+High
+
+---
+
+## Missing Output Validation
+
+Examples
+
+* Blind trust in AI responses
+* Missing schema validation
+
+Detection
+
+* Code pattern analysis
+
+Severity
+
+Medium
+
+---
+
+# 7. Detection Sources
+
+| Source                  | Purpose                           |
+| ----------------------- | --------------------------------- |
+| Semgrep                 | Static security rules             |
+| Bandit                  | Python security analysis          |
+| Gitleaks                | Secret detection                  |
+| pip-audit               | Python dependency vulnerabilities |
+| Tree-sitter             | AST parsing                       |
+| Repository Intelligence | Architecture context              |
+| Gemini                  | Explanation and reasoning only    |
+
+---
+
+# 8. Confidence Scoring
+
+Confidence is assigned after normalization.
+
+| Score    | Meaning                     |
+| -------- | --------------------------- |
+| 95–100   | Confirmed by multiple tools |
+| 80–94    | High confidence             |
+| 60–79    | Medium confidence           |
+| 40–59    | Low confidence              |
+| Below 40 | Advisory only               |
+
+LLMs do not increase confidence.
+
+They may reduce confidence if evidence is incomplete.
+
+---
+
+# 9. False Positive Strategy
+
+Every finding receives one of:
+
+* Confirmed
+* Likely
+* Possible
+* Needs Review
+
+Users may mark findings as:
+
+* Ignored
+* Accepted Risk
+* Resolved
+
+Ignored findings remain in history.
+
+---
+
+# 10. Rule Metadata
+
+Every rule must include:
+
+* Rule ID
+* Rule Name
+* Category
+* Severity
+* CWE Mapping
+* OWASP Mapping
+* Description
+* Detection Source
+* Confidence
+* Remediation Guidance
+* References
+
+---
+
+# 11. Evidence Collection
+
+Every finding must include:
+
+* Affected file
+* Line number
+* Rule ID
+* Triggering code snippet
+* Scanner output
+* Related symbols
+* Repository context
+
+LLM explanations must reference only collected evidence.
+
+---
+
+# 12. AI Reasoning Rules
+
+The AI must never:
+
+* Invent vulnerabilities
+* Change severity without evidence
+* Recommend unsafe fixes
+* Execute repository code
+* Assume business context
+
+The AI may:
+
+* Explain findings
+* Prioritize remediation
+* Describe exploit scenarios
+* Suggest secure coding practices
+
+---
+
+# 13. Risk Scoring Formula
+
+Overall Repository Score
+
+100
+
+− Critical Findings Penalty
+
+− High Findings Penalty
+
+− Medium Findings Penalty
+
+− Secret Exposure Penalty
+
+− Dependency Risk Penalty
+
+Final score is clamped between 0 and 100.
+
+---
+
+# 14. Rule Update Strategy
+
+Security rules are versioned.
+
+Rule updates must:
+
+* Preserve backward compatibility
+* Include migration notes
+* Be independently testable
+
+Rule packs are loaded dynamically.
+
+---
+
+# 15. Future Rule Packs
+
+* CodeQL Integration
+* Semgrep Pro Rules
+* Java Security Rules
+* Go Security Rules
+* Rust Security Rules
+* Kubernetes Security Rules
+* Docker Security Rules
+* Terraform Security Rules
+* Cloud Misconfiguration Rules
+* Supply Chain Security Rules
+* AI Agent Security Rules
+
+---
+
+# 16. Security Constraints
+
+Sentinel must never:
+
+* Execute repository code
+* Upload repositories to unknown services
+* Modify source code without user approval
+* Store secrets permanently
+* Log sensitive credentials
+
+---
+
+# 17. Testing Strategy
+
+Every rule must include:
+
+* Positive test cases
+* Negative test cases
+* Edge cases
+* False positive validation
+* Performance benchmarks
+
+New rules cannot be released without automated regression tests.
+
+---
+
+# 18. Definition of Done
+
+A security rule is complete only when it includes:
+
+* Unique Rule ID
+* Supported languages
+* Detection implementation
+* Severity classification
+* Confidence strategy
+* Unit tests
+* Integration tests
+* Documentation
+* Example vulnerable code
+* Example secure code
+* Remediation guidance
+* Version history

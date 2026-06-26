@@ -1,0 +1,593 @@
+# Sentinel AI
+
+# Testing Strategy (Testing_Strategy.md)
+
+**Version:** 1.0
+
+---
+
+# 1. Purpose
+
+This document defines the testing strategy for Sentinel AI.
+
+It specifies:
+
+* Testing philosophy
+* Testing pyramid
+* Unit testing
+* Integration testing
+* End-to-end testing
+* AI validation
+* Security testing
+* Performance testing
+* Regression testing
+* CI/CD quality gates
+
+Every feature must be tested before deployment.
+
+---
+
+# 2. Testing Philosophy
+
+Sentinel follows the principle:
+
+> **"Test behavior, not implementation."**
+
+Tests verify what the system does rather than how it is implemented.
+
+Goals:
+
+* Prevent regressions
+* Ensure reliability
+* Enable safe refactoring
+* Validate AI outputs
+* Maintain production quality
+
+---
+
+# 3. Testing Pyramid
+
+```text
+                E2E Tests
+                  (10%)
+
+          Integration Tests
+               (30%)
+
+            Unit Tests
+               (60%)
+```
+
+Most tests should be fast unit tests.
+
+---
+
+# 4. Testing Stack
+
+## Backend
+
+* pytest
+* pytest-asyncio
+* pytest-cov
+* httpx
+* factory-boy
+* Faker
+
+---
+
+## Frontend
+
+* Vitest
+* React Testing Library
+* Playwright
+
+---
+
+## API Testing
+
+* FastAPI TestClient
+* httpx
+
+---
+
+## Performance Testing
+
+* Locust
+
+---
+
+## Security Testing
+
+* Semgrep
+* Bandit
+* Gitleaks
+
+---
+
+## Coverage
+
+Backend
+
+≥90%
+
+Frontend
+
+≥80%
+
+Critical Modules
+
+100%
+
+---
+
+# 5. Unit Testing
+
+Purpose
+
+Verify individual functions.
+
+Examples
+
+Repository parser
+
+Risk score calculation
+
+Severity mapping
+
+Prompt builders
+
+Utility functions
+
+Database models
+
+Validators
+
+Each unit test must:
+
+* Be deterministic
+* Be isolated
+* Avoid network calls
+* Complete in under 1 second
+
+---
+
+# 6. Integration Testing
+
+Purpose
+
+Verify collaboration between components.
+
+Examples
+
+FastAPI ↔ PostgreSQL
+
+FastAPI ↔ Redis
+
+Repository Service ↔ Tree-sitter
+
+Scanner ↔ Findings Database
+
+Embedding Service ↔ ChromaDB
+
+Reasoning Service ↔ Gemini (mocked)
+
+Tests verify:
+
+* Data flow
+* Serialization
+* Database persistence
+* API contracts
+
+---
+
+# 7. End-to-End Testing
+
+Purpose
+
+Validate complete user workflows.
+
+Primary Scenario
+
+User pastes GitHub URL
+
+↓
+
+Repository cloned
+
+↓
+
+Repository parsed
+
+↓
+
+Security tools executed
+
+↓
+
+AI explanations generated
+
+↓
+
+Report created
+
+↓
+
+Frontend displays results
+
+↓
+
+User downloads report
+
+Additional Scenarios
+
+* Invalid GitHub URL
+* Scan failure
+* Repository too large
+* Empty repository
+* AI timeout
+* Scanner timeout
+
+---
+
+# 8. API Testing
+
+Every endpoint must verify:
+
+* Success response
+* Validation errors
+* Authentication (future)
+* Authorization (future)
+* Error handling
+* Pagination
+* Invalid payloads
+
+Target
+
+100% endpoint coverage
+
+---
+
+# 9. Database Testing
+
+Validate:
+
+* Migrations
+* Relationships
+* Constraints
+* Cascade behavior
+* Soft deletes
+* Transactions
+
+No production migration is accepted without migration tests.
+
+---
+
+# 10. Repository Parser Testing
+
+Test repositories of varying sizes and languages.
+
+Supported Languages
+
+* Python
+* JavaScript
+* TypeScript
+* Java
+* Go
+* C++
+
+Verify:
+
+* Function extraction
+* Class extraction
+* Imports
+* API routes
+* Authentication detection
+
+---
+
+# 11. Security Rule Testing
+
+Every security rule requires:
+
+Positive Example
+
+A vulnerable sample that must trigger a finding.
+
+Negative Example
+
+A secure sample that must not trigger a finding.
+
+Edge Case
+
+Borderline implementation to minimize false positives.
+
+Regression
+
+Previously fixed vulnerabilities remain detectable.
+
+---
+
+# 12. AI Validation Testing
+
+Purpose
+
+Ensure AI explanations remain factual.
+
+The AI must never:
+
+* Invent vulnerabilities
+* Change scanner results
+* Reference nonexistent files
+* Produce malformed JSON
+
+Validation
+
+* JSON schema validation
+* Evidence-only prompts
+* Snapshot testing
+* Prompt regression tests
+
+---
+
+# 13. Prompt Testing
+
+Every system prompt must be tested.
+
+Verify:
+
+* JSON output
+* Required fields
+* No Markdown
+* No hallucinations
+* Stable responses
+
+Temperature
+
+0.1
+
+Prompt changes require regression approval.
+
+---
+
+# 14. Performance Testing
+
+Targets
+
+Repository Clone
+
+<30 seconds
+
+Repository Parse
+
+<60 seconds
+
+Security Scan
+
+<120 seconds
+
+AI Reasoning
+
+<60 seconds
+
+Full Scan
+
+<5 minutes
+
+Load Testing
+
+50 concurrent scans (future)
+
+---
+
+# 15. Frontend Testing
+
+Test:
+
+Components
+
+Pages
+
+Hooks
+
+Forms
+
+Navigation
+
+Error states
+
+Loading states
+
+Empty states
+
+Accessibility
+
+Responsive layouts
+
+Use React Testing Library for components and Playwright for user flows.
+
+---
+
+# 16. Accessibility Testing
+
+Verify:
+
+* Keyboard navigation
+* Screen reader labels
+* Focus management
+* Color contrast
+* ARIA roles
+
+Target
+
+WCAG 2.1 AA
+
+---
+
+# 17. Security Testing
+
+Static Analysis
+
+Semgrep
+
+Bandit
+
+Secret Scanning
+
+Gitleaks
+
+Dependency Scanning
+
+pip-audit
+
+No critical security issue may exist in Sentinel itself.
+
+---
+
+# 18. Mocking Strategy
+
+Mock:
+
+Gemini API
+
+GitHub API
+
+External network calls
+
+Real:
+
+PostgreSQL
+
+Redis
+
+ChromaDB
+
+Tree-sitter
+
+Semgrep
+
+This keeps tests deterministic while validating core infrastructure.
+
+---
+
+# 19. Test Data
+
+Maintain dedicated fixtures for:
+
+Small repository
+
+Large repository
+
+Monorepo
+
+Empty repository
+
+Vulnerable repository
+
+Clean repository
+
+AI workflow project
+
+Each fixture is version controlled.
+
+---
+
+# 20. Continuous Integration
+
+Every Pull Request executes:
+
+1. Linting
+2. Formatting
+3. Type Checking
+4. Unit Tests
+5. Integration Tests
+6. Frontend Tests
+7. Security Scans
+8. Coverage Report
+9. Docker Build
+
+Deployment occurs only if all checks pass.
+
+---
+
+# 21. Regression Testing
+
+Regression suite runs:
+
+* Before every release
+* After dependency upgrades
+* After prompt changes
+* After scanner rule updates
+
+No release proceeds with failing regression tests.
+
+---
+
+# 22. Test Naming Convention
+
+Backend
+
+test_<module>_<behavior>.py
+
+Example
+
+test_risk_engine_calculates_score.py
+
+Frontend
+
+<Component>.test.tsx
+
+Playwright
+
+*.spec.ts
+
+---
+
+# 23. Quality Gates
+
+Merge blocked if:
+
+Coverage below target
+
+Any critical test fails
+
+Security scan fails
+
+Linting fails
+
+Type checking fails
+
+OpenAPI schema invalid
+
+Docker build fails
+
+---
+
+# 24. Release Checklist
+
+Before every release:
+
+* Unit tests pass
+* Integration tests pass
+* End-to-end tests pass
+* AI validation passes
+* Security scan passes
+* Performance benchmarks pass
+* Documentation updated
+* Version tag created
+
+---
+
+# 25. Definition of Done
+
+A feature is considered complete only if:
+
+* Unit tests written
+* Integration tests written
+* E2E scenario covered
+* AI behavior validated (if applicable)
+* Performance verified
+* Security reviewed
+* Documentation updated
+* CI pipeline passes
+* Coverage targets maintained
+* No known critical defects
