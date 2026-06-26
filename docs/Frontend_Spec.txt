@@ -1,0 +1,838 @@
+# Sentinel AI
+
+# Frontend Specification Document (Frontend_Spec.md)
+
+**Version:** 1.0 (MVP)
+
+---
+
+# 1. Purpose
+
+This document defines the complete frontend architecture, user experience, screen hierarchy, component library, navigation, design system, and interaction patterns for Sentinel AI.
+
+The frontend must be:
+
+* Fast
+* Minimal
+* Accessible
+* Responsive
+* Information-dense
+* Keyboard-friendly
+
+The interface should feel like a professional developer tool rather than a consumer application.
+
+---
+
+# 2. Design Philosophy
+
+Sentinel follows these principles:
+
+### Developer First
+
+Built for engineers.
+
+No unnecessary animations.
+
+No decorative UI.
+
+---
+
+### Information First
+
+Every screen exists to communicate useful information.
+
+Visuals must improve understanding.
+
+---
+
+### Minimalism
+
+Less clutter.
+
+More clarity.
+
+Whitespace is intentional.
+
+---
+
+### Performance
+
+Every interaction should feel instant.
+
+Skeleton loaders instead of spinners.
+
+Optimistic UI where appropriate.
+
+---
+
+### Accessibility
+
+WCAG AA compliant.
+
+Keyboard navigation.
+
+Screen reader support.
+
+Visible focus states.
+
+---
+
+# 3. Technology Stack
+
+Framework
+
+Next.js 15 (App Router)
+
+Language
+
+TypeScript
+
+Styling
+
+Tailwind CSS
+
+UI Library
+
+shadcn/ui
+
+Icons
+
+Lucide React
+
+Charts
+
+Recharts
+
+State Management
+
+TanStack Query
+
+Zustand
+
+Forms
+
+React Hook Form
+
+Validation
+
+Zod
+
+Notifications
+
+Sonner
+
+Animations
+
+Framer Motion (minimal)
+
+---
+
+# 4. Application Structure
+
+```text
+/
+
+├── Dashboard
+
+├── Scan
+
+├── Scan Details
+
+├── Findings
+
+├── Repository
+
+├── Reports
+
+├── Settings
+
+└── Error Pages
+```
+
+---
+
+# 5. Navigation
+
+Sidebar
+
+* Dashboard
+* New Scan
+* Repositories
+* Findings
+* Reports
+* Settings
+
+Top Navigation
+
+* Search
+* Theme Toggle
+* User Menu
+* Notifications (Future)
+
+---
+
+# 6. Screen Hierarchy
+
+```text
+Dashboard
+
+↓
+
+Repository
+
+↓
+
+Scan
+
+↓
+
+Scan Summary
+
+↓
+
+Finding Details
+
+↓
+
+Export Report
+```
+
+---
+
+# 7. Screen 1 – Dashboard
+
+Purpose
+
+Landing page.
+
+Displays recent activity.
+
+Components
+
+* Security Score Card
+* Total Repositories
+* Active Scans
+* Critical Findings
+* Recent Reports
+* Recent Scans
+
+Actions
+
+* New Scan
+* View Repository
+* View Report
+
+---
+
+# 8. Screen 2 – New Scan
+
+Purpose
+
+Start a repository scan.
+
+Components
+
+* GitHub URL Input
+* Scan Button
+* Validation Messages
+* Recent Repositories
+
+User Flow
+
+Paste URL
+
+↓
+
+Validate
+
+↓
+
+Start Scan
+
+↓
+
+Redirect to Progress
+
+---
+
+# 9. Screen 3 – Scan Progress
+
+Purpose
+
+Show real-time scan progress.
+
+Progress Steps
+
+* Queued
+* Cloning
+* Parsing
+* Embedding
+* Security Analysis
+* AI Reasoning
+* Report Generation
+* Completed
+
+Display
+
+* Progress Bar
+* Current Stage
+* Estimated Time Remaining
+* Live Logs (Optional)
+
+---
+
+# 10. Screen 4 – Scan Summary
+
+Purpose
+
+Repository overview.
+
+Sections
+
+Security Score
+
+Severity Breakdown
+
+Top Risks
+
+Repository Metadata
+
+Technology Stack
+
+Architecture Summary
+
+Quick Actions
+
+---
+
+# 11. Screen 5 – Findings
+
+Purpose
+
+Display all findings.
+
+Filters
+
+Severity
+
+Category
+
+Status
+
+Tool
+
+Search
+
+Sort
+
+Table Columns
+
+Severity
+
+Title
+
+Category
+
+Confidence
+
+Status
+
+File
+
+Tool
+
+---
+
+# 12. Screen 6 – Finding Details
+
+Purpose
+
+Explain one finding.
+
+Sections
+
+Summary
+
+Code Snippet
+
+AI Explanation
+
+Business Impact
+
+Technical Impact
+
+Recommended Fix
+
+Evidence
+
+Related Files
+
+---
+
+# 13. Screen 7 – Repository Overview
+
+Purpose
+
+Display repository intelligence.
+
+Cards
+
+Languages
+
+Frameworks
+
+Dependencies
+
+Authentication
+
+Database
+
+API Routes
+
+Architecture Graph
+
+File Tree
+
+---
+
+# 14. Screen 8 – Reports
+
+Purpose
+
+Download reports.
+
+Formats
+
+Markdown
+
+JSON
+
+Future
+
+PDF
+
+SARIF
+
+---
+
+# 15. Screen 9 – Settings
+
+Sections
+
+Theme
+
+Preferred LLM
+
+Ignored Rules
+
+Notifications (Future)
+
+API Keys (Future)
+
+---
+
+# 16. Component Library
+
+Buttons
+
+Primary
+
+Secondary
+
+Danger
+
+Ghost
+
+Cards
+
+Metric Card
+
+Summary Card
+
+Finding Card
+
+Repository Card
+
+Tables
+
+Finding Table
+
+Repository Table
+
+Scan Table
+
+Forms
+
+Input
+
+Textarea
+
+Select
+
+Checkbox
+
+Dialogs
+
+Confirmation
+
+Delete
+
+Error
+
+Progress
+
+Charts
+
+Severity Pie Chart
+
+Risk Trend
+
+Repository Metrics
+
+Badges
+
+Critical
+
+High
+
+Medium
+
+Low
+
+Info
+
+---
+
+# 17. Design Tokens
+
+Colors
+
+Background
+
+#050505
+
+Surface
+
+#111111
+
+Primary
+
+#10B981
+
+Danger
+
+#EF4444
+
+Warning
+
+#F59E0B
+
+Text
+
+#FFFFFF
+
+Muted
+
+#9CA3AF
+
+Border Radius
+
+12px
+
+Spacing
+
+8px grid
+
+Typography
+
+Inter
+
+---
+
+# 18. UX Flows
+
+## New Scan
+
+Dashboard
+
+↓
+
+Paste GitHub URL
+
+↓
+
+Validation
+
+↓
+
+Scan Started
+
+↓
+
+Progress
+
+↓
+
+Summary
+
+↓
+
+Findings
+
+↓
+
+Export
+
+---
+
+## Finding Investigation
+
+Summary
+
+↓
+
+Open Finding
+
+↓
+
+Review Code
+
+↓
+
+Read Explanation
+
+↓
+
+Review Recommendation
+
+↓
+
+Mark Resolved / Ignored
+
+---
+
+# 19. Loading States
+
+Every page has:
+
+Skeleton Cards
+
+Skeleton Tables
+
+Skeleton Charts
+
+Never show blank pages.
+
+---
+
+# 20. Empty States
+
+Examples
+
+No repositories.
+
+No findings.
+
+No reports.
+
+Display helpful actions.
+
+Example
+
+"Start your first repository scan."
+
+---
+
+# 21. Error States
+
+Network Error
+
+Repository Not Found
+
+Scan Failed
+
+LLM Timeout
+
+Display:
+
+* Error Message
+* Retry Button
+* Error Code
+
+---
+
+# 22. Responsive Design
+
+Desktop
+
+Primary target.
+
+Tablet
+
+Supported.
+
+Mobile
+
+Read-only experience.
+
+Scanning is disabled on small screens.
+
+---
+
+# 23. Accessibility
+
+Keyboard navigation
+
+Visible focus indicators
+
+ARIA labels
+
+High contrast mode
+
+Screen reader compatibility
+
+Minimum touch target: 44px
+
+---
+
+# 24. State Management
+
+TanStack Query
+
+Server state
+
+Zustand
+
+UI state
+
+React Hook Form
+
+Form state
+
+No duplicated state.
+
+---
+
+# 25. Performance Requirements
+
+Initial page load
+
+<2 seconds
+
+Navigation
+
+<300ms
+
+Large tables
+
+Virtualized rendering
+
+Charts
+
+Lazy loaded
+
+Images
+
+Optimized
+
+---
+
+# 26. Folder Structure
+
+```text
+frontend/
+
+app/
+
+components/
+
+features/
+
+hooks/
+
+lib/
+
+services/
+
+stores/
+
+types/
+
+styles/
+
+assets/
+```
+
+Components
+
+```text
+components/
+
+ui/
+
+layout/
+
+dashboard/
+
+scan/
+
+finding/
+
+repository/
+
+report/
+
+charts/
+
+common/
+```
+
+---
+
+# 27. Security Requirements
+
+No secrets stored in localStorage.
+
+Validate all user inputs.
+
+Escape dynamic HTML.
+
+Protect against XSS.
+
+Use HTTPS in production.
+
+Never expose internal error traces.
+
+---
+
+# 28. Future Screens
+
+* Repository Chat
+* Pull Request Review
+* Security Timeline
+* Team Dashboard
+* Organization View
+* AI Assistant
+* Live Monitoring
+* Notifications
+* Billing
+* Enterprise Policies
+
+---
+
+# 29. Definition of Done
+
+A frontend feature is complete only if it includes:
+
+* Responsive layout
+* Accessibility support
+* Loading state
+* Empty state
+* Error state
+* Unit tests
+* Type safety
+* API integration
+* Keyboard support
+* Dark mode compatibility
+* Documentation
+* No console errors

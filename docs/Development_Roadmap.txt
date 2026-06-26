@@ -1,0 +1,576 @@
+# Sentinel AI
+
+# Development Roadmap (Development_Roadmap.md)
+
+**Version:** 1.0
+
+**Duration:** 6 Weeks
+
+**Goal:** Build a production-ready MVP capable of scanning public GitHub repositories, detecting security issues, explaining findings with AI, and generating professional reports.
+
+---
+
+# 1. Guiding Principles
+
+Every week must produce:
+
+* A working application increment
+* Passing automated tests
+* Updated documentation
+* A deployable build
+* GitHub commits with meaningful history
+
+Do not begin the next milestone until the current milestone satisfies its Definition of Done.
+
+---
+
+# 2. Project Timeline
+
+```text
+Week 1 → Foundation
+
+Week 2 → Repository Intelligence
+
+Week 3 → Security Analysis
+
+Week 4 → AI Reasoning
+
+Week 5 → Frontend & Reports
+
+Week 6 → Polish, Deployment & Release
+```
+
+---
+
+# Week 1 – Project Foundation
+
+## Objective
+
+Create the project skeleton and development infrastructure.
+
+### Deliverables
+
+Repository structure
+
+Docker Compose
+
+FastAPI backend
+
+Next.js frontend
+
+PostgreSQL integration
+
+Redis integration
+
+ChromaDB integration
+
+GitHub Actions
+
+Logging
+
+Configuration management
+
+Health API
+
+---
+
+### Tasks
+
+Backend
+
+* Initialize FastAPI
+* Configure dependency injection
+* Configure settings with Pydantic
+* Configure logging
+* Configure SQLAlchemy
+* Configure Alembic
+* Create health endpoint
+
+Frontend
+
+* Initialize Next.js
+* Configure Tailwind CSS
+* Install shadcn/ui
+* Create layout
+* Configure TanStack Query
+* Configure Zustand
+
+Infrastructure
+
+* Docker Compose
+* Environment variables
+* GitHub Actions
+* Pre-commit hooks
+
+Testing
+
+* Configure pytest
+* Configure Vitest
+* Add first health tests
+
+---
+
+### Definition of Done
+
+* Application starts with one command
+* Docker containers healthy
+* Database migrations working
+* Health endpoint operational
+* CI pipeline passing
+* Initial deployment successful
+
+---
+
+# Week 2 – Repository Intelligence
+
+## Objective
+
+Understand repositories before performing security analysis.
+
+### Deliverables
+
+Repository cloning
+
+Tree-sitter parsing
+
+Language detection
+
+Framework detection
+
+Repository metadata extraction
+
+Architecture graph
+
+Embedding generation
+
+ChromaDB storage
+
+---
+
+### Tasks
+
+Repository Service
+
+* Clone repositories
+* Validate GitHub URLs
+* Store metadata
+* Cleanup temporary directories
+
+Parser
+
+* Parse Python
+* Parse JavaScript
+* Parse TypeScript
+* Parse Java
+* Parse Go
+* Parse C++
+
+Metadata
+
+* Detect frameworks
+* Detect package managers
+* Detect databases
+* Detect API routes
+* Detect authentication mechanisms
+
+Embeddings
+
+* Chunk source code
+* Generate embeddings
+* Store in ChromaDB
+* Verify retrieval
+
+---
+
+### Definition of Done
+
+* Public repository successfully analyzed
+* Metadata stored
+* Symbols extracted
+* Embeddings searchable
+* Repository overview API functional
+
+---
+
+# Week 3 – Security Analysis
+
+## Objective
+
+Detect vulnerabilities using static analysis.
+
+### Deliverables
+
+Semgrep integration
+
+Bandit integration
+
+Gitleaks integration
+
+pip-audit integration
+
+Finding normalization
+
+Severity mapping
+
+Evidence collection
+
+---
+
+### Tasks
+
+Security Pipeline
+
+* Run scanners
+* Normalize outputs
+* Remove duplicates
+* Map severities
+* Store findings
+
+Evidence
+
+* Code snippets
+* File locations
+* Rule metadata
+* CWE mapping
+* OWASP mapping
+
+Backend APIs
+
+* Scan status
+* Findings list
+* Finding details
+
+Frontend
+
+* Findings table
+* Severity badges
+* Filtering
+* Pagination
+
+---
+
+### Definition of Done
+
+* Repository scan completes successfully
+* Findings persisted
+* Findings visible in UI
+* Filtering operational
+
+---
+
+# Week 4 – AI Reasoning
+
+## Objective
+
+Explain findings with AI using repository context.
+
+### Deliverables
+
+Context retrieval
+
+Gemini integration
+
+Finding explanations
+
+Risk assessment
+
+Executive summaries
+
+---
+
+### Tasks
+
+Context Retrieval
+
+* Retrieve relevant code
+* Retrieve neighboring symbols
+* Retrieve documentation
+* Build prompt context
+
+AI
+
+* Structured prompts
+* JSON output validation
+* Retry logic
+* Token logging
+
+Risk Engine
+
+* Calculate security score
+* Assign confidence
+* Rank findings
+
+Frontend
+
+* Finding detail page
+* AI explanation panel
+* Risk score cards
+
+---
+
+### Definition of Done
+
+* AI explanations generated
+* No hallucinated findings
+* Repository receives security score
+* Finding detail page complete
+
+---
+
+# Week 5 – Frontend & Reports
+
+## Objective
+
+Deliver a polished user experience.
+
+### Deliverables
+
+Dashboard
+
+Repository pages
+
+Scan progress
+
+Reports
+
+Exports
+
+Responsive design
+
+---
+
+### Tasks
+
+Frontend
+
+* Dashboard
+* Repository overview
+* Scan progress
+* Findings
+* Reports
+* Navigation
+* Error states
+* Loading states
+* Empty states
+
+Reports
+
+* Markdown export
+* JSON export
+* Executive summary
+
+Charts
+
+* Severity distribution
+* Security score
+* Repository metrics
+
+---
+
+### Definition of Done
+
+* Complete user workflow
+* Reports downloadable
+* Dashboard polished
+* Mobile layout functional
+* Accessibility review complete
+
+---
+
+# Week 6 – Polish, Deployment & Release
+
+## Objective
+
+Prepare Sentinel for public release.
+
+### Deliverables
+
+Performance optimization
+
+Bug fixes
+
+Documentation
+
+Production deployment
+
+Portfolio assets
+
+---
+
+### Tasks
+
+Performance
+
+* Query optimization
+* Lazy loading
+* Caching
+* Virtualized tables
+
+Quality
+
+* End-to-end tests
+* Error handling review
+* Logging review
+* Security review
+
+Deployment
+
+* Production environment
+* Environment variables
+* Domain configuration
+* HTTPS
+* Monitoring
+
+Portfolio
+
+* README
+* Screenshots
+* Demo video
+* Architecture diagrams
+* Blog post
+* Resume update
+
+---
+
+### Definition of Done
+
+* Public deployment available
+* End-to-end tests passing
+* Documentation complete
+* Demo repository ready
+* Portfolio assets published
+
+---
+
+# 3. Daily Workflow
+
+Each development day follows:
+
+1. Review roadmap
+2. Create feature branch
+3. Implement feature
+4. Write unit tests
+5. Run integration tests
+6. Update documentation
+7. Open pull request
+8. Merge after CI passes
+
+---
+
+# 4. Git Strategy
+
+Branch Naming
+
+feature/<feature-name>
+
+bugfix/<bug-name>
+
+docs/<document-name>
+
+refactor/<module-name>
+
+Release Tags
+
+v0.1.0
+
+v0.2.0
+
+v0.3.0
+
+v1.0.0
+
+---
+
+# 5. Testing Milestones
+
+Week 1
+
+Infrastructure tests
+
+Week 2
+
+Repository parsing tests
+
+Week 3
+
+Security rule tests
+
+Week 4
+
+AI response validation tests
+
+Week 5
+
+Frontend integration tests
+
+Week 6
+
+End-to-end tests
+
+Target Coverage
+
+Backend: ≥90%
+
+Frontend: ≥80%
+
+---
+
+# 6. Success Metrics
+
+By the end of Week 6:
+
+* Scan a public GitHub repository in under 5 minutes
+* Detect supported vulnerabilities accurately
+* Generate AI explanations without hallucinations
+* Produce downloadable Markdown and JSON reports
+* Pass automated test suite
+* Deploy successfully to production
+* Demonstrate complete end-to-end workflow
+
+---
+
+# 7. Risks & Mitigation
+
+| Risk               | Mitigation                                     |
+| ------------------ | ---------------------------------------------- |
+| LLM rate limits    | Cache responses and implement retries          |
+| Large repositories | Enforce repository size limits for MVP         |
+| False positives    | Rely on static analyzers as source of truth    |
+| Performance issues | Background workers and asynchronous processing |
+| Scope creep        | Freeze MVP features until v1.0 release         |
+
+---
+
+# 8. MVP Exit Criteria
+
+Sentinel MVP is complete when:
+
+* A user can submit a public GitHub repository URL.
+* The repository is cloned and analyzed.
+* Static analysis tools identify supported vulnerabilities.
+* AI explains findings using repository context.
+* A security score is calculated.
+* Findings are displayed in the frontend.
+* Reports can be exported.
+* The application is publicly deployed.
+* Documentation is complete.
+* CI/CD pipeline passes.
+* All critical bugs are resolved.
+
+---
+
+# 9. Post-MVP Roadmap (v1.1+)
+
+* GitHub OAuth
+* GitHub App integration
+* Pull Request reviews
+* Auto-fix suggestions
+* CodeQL support
+* Multi-language expansion
+* Team workspaces
+* Organization dashboards
+* Continuous monitoring
+* VS Code extension
+* CLI
+* Enterprise policy engine
+* Security trend analysis

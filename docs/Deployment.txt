@@ -1,0 +1,568 @@
+# Sentinel AI
+
+# Deployment Guide (Deployment.md)
+
+**Version:** 1.0
+
+---
+
+# 1. Purpose
+
+This document defines the deployment architecture, infrastructure, containerization strategy, CI/CD pipeline, monitoring, and production operations for Sentinel AI.
+
+Deployment goals:
+
+* One-command local setup
+* Automated CI/CD
+* Reproducible builds
+* Zero manual server configuration
+* Cloud portability
+
+---
+
+# 2. Deployment Philosophy
+
+Sentinel follows:
+
+* Infrastructure as Code
+* Immutable deployments
+* Container-first architecture
+* Environment-based configuration
+* Automated releases
+* Stateless application servers
+
+---
+
+# 3. Technology Stack
+
+Application
+
+* Next.js 15
+* FastAPI
+* Celery
+
+Infrastructure
+
+* Docker
+* Docker Compose
+
+Databases
+
+* PostgreSQL
+* Redis
+* ChromaDB
+
+Cloud (MVP)
+
+* Railway
+
+Future
+
+* AWS
+* Google Cloud
+* Kubernetes
+
+---
+
+# 4. Architecture
+
+```text id="h12v0n"
+Internet
+    │
+    ▼
+Frontend (Next.js)
+    │
+    ▼
+Backend API (FastAPI)
+    │
+    ├──────────────┐
+    ▼              ▼
+Redis Queue   PostgreSQL
+    │
+    ▼
+Celery Workers
+    │
+    ▼
+ChromaDB
+    │
+    ▼
+Gemini API
+```
+
+---
+
+# 5. Local Development
+
+Requirements
+
+* Docker Desktop
+* Git
+* Python 3.12
+* Node.js 22
+* pnpm
+
+Clone repository
+
+```bash id="w2x8sl"
+git clone https://github.com/<user>/sentinel.git
+cd sentinel
+```
+
+Start services
+
+```bash id="r6a0pm"
+docker compose up --build
+```
+
+Available Services
+
+| Service     | Port |
+| ----------- | ---- |
+| Frontend    | 3000 |
+| Backend API | 8000 |
+| PostgreSQL  | 5432 |
+| Redis       | 6379 |
+| ChromaDB    | 8001 |
+
+---
+
+# 6. Environment Variables
+
+Backend (.env)
+
+```text id="e8y2bd"
+ENV=development
+
+DATABASE_URL=
+
+REDIS_URL=
+
+CHROMA_HOST=
+
+GEMINI_API_KEY=
+
+SECRET_KEY=
+
+LOG_LEVEL=INFO
+```
+
+Frontend (.env.local)
+
+```text id="q5z1lt"
+NEXT_PUBLIC_API_URL=http://localhost:8000
+```
+
+Rules
+
+* Never commit `.env` files.
+* Provide `.env.example`.
+* Validate configuration on startup.
+
+---
+
+# 7. Docker Architecture
+
+Containers
+
+```text id="g0x2ie"
+frontend
+
+backend
+
+worker
+
+postgres
+
+redis
+
+chromadb
+```
+
+Each service runs independently.
+
+---
+
+# 8. Docker Compose
+
+Compose orchestrates:
+
+* Networking
+* Persistent volumes
+* Health checks
+* Startup order
+
+Persistent Volumes
+
+* PostgreSQL data
+* ChromaDB data
+
+Temporary
+
+* Repository clone workspace
+
+---
+
+# 9. Build Strategy
+
+Backend
+
+* Multi-stage Docker build
+* Slim Python image
+* Install only production dependencies
+
+Frontend
+
+* Build static assets
+* Standalone Next.js output
+
+Goals
+
+* Small images
+* Fast startup
+* Cached dependencies
+
+---
+
+# 10. CI Pipeline
+
+Every Pull Request executes:
+
+1. Install dependencies
+2. Lint
+3. Format check
+4. Type checking
+5. Unit tests
+6. Integration tests
+7. Frontend tests
+8. Security scan
+9. Build Docker images
+
+Pipeline fails immediately on any critical error.
+
+---
+
+# 11. CD Pipeline
+
+On merge to `main`:
+
+1. Build production images
+2. Push images
+3. Apply database migrations
+4. Deploy backend
+5. Deploy frontend
+6. Restart workers
+7. Run smoke tests
+8. Notify deployment status
+
+---
+
+# 12. GitHub Actions
+
+Workflow Files
+
+```text id="z3h6yx"
+.github/workflows/
+
+ci.yml
+
+deploy.yml
+
+release.yml
+```
+
+CI
+
+Runs on every PR.
+
+Deploy
+
+Runs only on protected `main`.
+
+Release
+
+Runs when version tags are created.
+
+---
+
+# 13. Railway Deployment (MVP)
+
+Services
+
+* Frontend
+* Backend
+* Worker
+* PostgreSQL
+* Redis
+
+Environment variables managed through Railway.
+
+Automatic deployments from GitHub.
+
+Health checks enabled.
+
+---
+
+# 14. Database Migrations
+
+Alembic manages schema.
+
+Deployment sequence
+
+1. Backup database
+2. Apply migrations
+3. Verify migration
+4. Start application
+
+Never modify production schema manually.
+
+---
+
+# 15. Secrets Management
+
+Development
+
+`.env`
+
+Production
+
+Railway Secrets
+
+Future
+
+AWS Secrets Manager
+
+Google Secret Manager
+
+Rules
+
+* Rotate secrets regularly.
+* Never log secrets.
+* Never expose API keys to frontend.
+
+---
+
+# 16. Logging
+
+Structured JSON logging.
+
+Include
+
+* Timestamp
+* Request ID
+* Scan ID
+* Worker ID
+* Log Level
+
+Retention
+
+90 days
+
+---
+
+# 17. Monitoring
+
+Metrics
+
+* API latency
+* Scan duration
+* Worker queue length
+* Error rate
+* Memory usage
+* CPU usage
+
+Future
+
+Prometheus
+
+Grafana
+
+---
+
+# 18. Health Checks
+
+Backend
+
+`GET /health`
+
+Worker
+
+Queue connectivity
+
+Database
+
+Connection check
+
+Redis
+
+Ping
+
+ChromaDB
+
+Readiness check
+
+Deployments proceed only if health checks pass.
+
+---
+
+# 19. Backup Strategy
+
+PostgreSQL
+
+Daily backups
+
+Retention
+
+30 days
+
+ChromaDB
+
+Weekly snapshot
+
+Repository clones
+
+Never persisted after scans complete.
+
+---
+
+# 20. Rollback Strategy
+
+If deployment fails:
+
+1. Stop rollout
+2. Restore previous container image
+3. Reconnect previous database schema
+4. Validate health
+5. Notify maintainers
+
+No manual code edits in production.
+
+---
+
+# 21. Scaling Strategy
+
+Horizontal
+
+* Backend API
+* Celery workers
+
+Vertical
+
+* PostgreSQL
+* ChromaDB
+
+Queue-based architecture enables worker scaling without changing application logic.
+
+---
+
+# 22. Security Hardening
+
+Production requirements
+
+* HTTPS only
+* Secure headers
+* Rate limiting
+* Input validation
+* Non-root containers
+* Read-only filesystem where possible
+* Automatic dependency updates
+
+---
+
+# 23. Release Process
+
+Versioning
+
+Semantic Versioning
+
+Examples
+
+v0.1.0
+
+v0.2.0
+
+v1.0.0
+
+Release checklist
+
+* CI passes
+* Tests pass
+* Security scan passes
+* Documentation updated
+* Changelog generated
+* Version tag created
+
+---
+
+# 24. Disaster Recovery
+
+Recover by:
+
+* Restoring PostgreSQL backup
+* Restoring ChromaDB snapshot
+* Redeploying containers
+* Running health checks
+* Validating scan workflow
+
+Target Recovery Time (RTO)
+
+<30 minutes
+
+Target Data Loss (RPO)
+
+<24 hours
+
+---
+
+# 25. Future Production Architecture
+
+Current (MVP)
+
+Railway
+
+Future
+
+```text id="y1k8cp"
+Cloudflare
+      │
+      ▼
+Load Balancer
+      │
+      ▼
+API Pods
+      │
+      ├─────────────┐
+      ▼             ▼
+Redis Cluster   PostgreSQL
+      │
+      ▼
+Celery Workers
+      │
+      ▼
+ChromaDB
+```
+
+Potential additions
+
+* Kubernetes
+* Auto-scaling
+* CDN
+* Object storage
+* Multi-region deployment
+
+---
+
+# 26. Definition of Done
+
+Deployment is complete only when:
+
+* Application builds successfully
+* Docker images are reproducible
+* CI pipeline passes
+* CD pipeline deploys automatically
+* Database migrations succeed
+* Health checks pass
+* HTTPS enabled
+* Secrets managed securely
+* Monitoring active
+* Rollback tested
+* Documentation updated

@@ -1,0 +1,754 @@
+# Sentinel AI
+
+# Database Design Document (DDD)
+
+Version 1.0
+
+---
+
+# 1. Database Architecture
+
+Sentinel uses a polyglot persistence architecture.
+
+```
+                Sentinel
+
+                    │
+
+      ┌─────────────┼─────────────┐
+
+ PostgreSQL      ChromaDB      Redis
+
+ Structured      Embeddings    Cache / Queue
+
+```
+
+Each database has one responsibility.
+
+---
+
+# 2. PostgreSQL Schema
+
+The database is divided into logical domains.
+
+```
+Authentication
+
+Repositories
+
+Scans
+
+Repository Metadata
+
+Security Findings
+
+Reports
+
+Knowledge Graph
+
+Audit
+
+Settings
+```
+
+---
+
+# 3. Users
+
+Purpose
+
+Authentication and ownership.
+
+Columns
+
+```
+id (UUID)
+
+email
+
+username
+
+password_hash
+
+full_name
+
+avatar_url
+
+plan
+
+created_at
+
+updated_at
+```
+
+Relationships
+
+```
+1 User
+
+↓
+
+Many Repositories
+```
+
+---
+
+# 4. Repositories
+
+Purpose
+
+Stores imported GitHub repositories.
+
+Columns
+
+```
+id
+
+user_id
+
+github_url
+
+repository_name
+
+owner
+
+default_branch
+
+visibility
+
+language
+
+framework
+
+status
+
+created_at
+```
+
+Relationship
+
+```
+Repository
+
+↓
+
+Many Scans
+
+↓
+
+Many Files
+```
+
+---
+
+# 5. Scans
+
+Purpose
+
+Every scan creates one record.
+
+Columns
+
+```
+id
+
+repository_id
+
+scan_status
+
+scan_type
+
+started_at
+
+completed_at
+
+duration
+
+security_score
+
+total_findings
+
+critical
+
+high
+
+medium
+
+low
+
+info
+```
+
+---
+
+# 6. Files
+
+Stores metadata for every source file.
+
+Columns
+
+```
+id
+
+repository_id
+
+path
+
+language
+
+size
+
+checksum
+
+extension
+
+lines
+
+is_test
+
+created_at
+```
+
+---
+
+# 7. Symbols
+
+Every function
+
+Every class
+
+Every method
+
+Every API route
+
+```
+id
+
+file_id
+
+name
+
+type
+
+language
+
+start_line
+
+end_line
+
+signature
+
+documentation
+```
+
+---
+
+# 8. Dependencies
+
+Tracks imports.
+
+```
+id
+
+repository_id
+
+source_file
+
+target_module
+
+dependency_type
+```
+
+---
+
+# 9. API Endpoints
+
+Stores detected REST endpoints.
+
+```
+id
+
+repository_id
+
+method
+
+path
+
+authentication
+
+file
+
+line
+```
+
+---
+
+# 10. Authentication Modules
+
+```
+id
+
+repository_id
+
+provider
+
+jwt
+
+oauth
+
+session
+
+file
+```
+
+---
+
+# 11. Security Findings
+
+Most important table.
+
+```
+id
+
+scan_id
+
+tool
+
+rule_id
+
+title
+
+severity
+
+category
+
+status
+
+confidence
+
+file
+
+line
+
+column
+
+code_snippet
+
+explanation
+
+recommendation
+
+created_at
+```
+
+Status
+
+```
+Open
+
+Ignored
+
+Resolved
+```
+
+---
+
+# 12. Security Categories
+
+Lookup table.
+
+```
+Authentication
+
+Authorization
+
+Secrets
+
+Injection
+
+XSS
+
+CSRF
+
+Prompt Injection
+
+Unsafe Tool Use
+
+Dependency
+
+Configuration
+
+AI Safety
+```
+
+---
+
+# 13. AI Explanations
+
+Separate table.
+
+Never mix AI output with findings.
+
+```
+id
+
+finding_id
+
+model
+
+prompt_version
+
+explanation
+
+impact
+
+recommendation
+
+confidence
+```
+
+---
+
+# 14. Reports
+
+```
+id
+
+scan_id
+
+markdown
+
+json
+
+generated_at
+```
+
+---
+
+# 15. Repository Summary
+
+Stores generated overview.
+
+```
+id
+
+repository_id
+
+languages
+
+frameworks
+
+database
+
+architecture_summary
+
+readme_summary
+```
+
+---
+
+# 16. Knowledge Graph
+
+Stores architecture graph.
+
+```
+Nodes
+
+Edges
+
+Relationships
+```
+
+Example
+
+```
+LoginService
+
+↓
+
+AuthController
+
+↓
+
+JWTMiddleware
+
+↓
+
+UserRepository
+```
+
+---
+
+# 17. Audit Log
+
+Everything important.
+
+```
+id
+
+user_id
+
+action
+
+entity
+
+entity_id
+
+timestamp
+```
+
+---
+
+# 18. Scan Events
+
+Tracks scan progress.
+
+```
+Queued
+
+Cloning
+
+Parsing
+
+Embedding
+
+Scanning
+
+Reasoning
+
+Completed
+
+Failed
+```
+
+---
+
+# 19. Settings
+
+Future customization.
+
+```
+Preferred LLM
+
+Ignored Rules
+
+Theme
+
+Notifications
+```
+
+---
+
+# 20. ChromaDB Collections
+
+RepositoryChunks
+
+Stores
+
+Function embeddings
+
+Class embeddings
+
+Method embeddings
+
+Documentation
+
+---
+
+Collection Metadata
+
+```
+repository_id
+
+file_path
+
+language
+
+symbol_type
+
+symbol_name
+
+chunk_id
+
+start_line
+
+end_line
+```
+
+---
+
+# 21. Redis
+
+Queues
+
+```
+Repository Queue
+
+Parser Queue
+
+Embedding Queue
+
+Security Queue
+
+Reasoning Queue
+
+Reporting Queue
+```
+
+Cache
+
+```
+Repository metadata
+
+Framework detection
+
+LLM responses
+```
+
+---
+
+# 22. Relationships
+
+```
+User
+
+↓
+
+Repositories
+
+↓
+
+Scans
+
+↓
+
+Files
+
+↓
+
+Symbols
+
+↓
+
+Security Findings
+
+↓
+
+AI Explanations
+
+↓
+
+Reports
+```
+
+---
+
+# 23. Indexes
+
+Repositories
+
+```
+github_url
+
+owner
+
+repository_name
+```
+
+Files
+
+```
+repository_id
+
+path
+```
+
+Findings
+
+```
+severity
+
+status
+
+category
+
+scan_id
+```
+
+Symbols
+
+```
+file_id
+
+name
+```
+
+---
+
+# 24. Retention Policy
+
+Repository clone
+
+Delete after scan.
+
+Metadata
+
+Permanent.
+
+Reports
+
+Permanent.
+
+Embeddings
+
+Regenerated on rescan.
+
+Logs
+
+90 days.
+
+---
+
+# 25. Database Constraints
+
+Every repository belongs to one user.
+
+Every scan belongs to one repository.
+
+Every finding belongs to one scan.
+
+Every explanation belongs to one finding.
+
+No orphan records.
+
+Cascade deletes disabled.
+
+Soft deletes preferred.
+
+---
+
+# 26. Future Tables
+
+Organizations
+
+Teams
+
+Projects
+
+Pull Requests
+
+Policies
+
+Custom Rules
+
+AI Conversations
+
+Notifications
+
+Billing
+
+Integrations
+
+Enterprise Roles
+
+These are intentionally excluded from MVP but the schema allows future expansion.
