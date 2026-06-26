@@ -1,0 +1,852 @@
+# Sentinel AI
+
+# System Architecture Document (SAD)
+
+Version 1.0
+
+---
+
+# 1. Purpose
+
+This document defines the complete system architecture of Sentinel AI.
+
+It specifies:
+
+* Components
+* Data flow
+* Trust boundaries
+* Services
+* Agent interactions
+* Deployment
+* Security
+* Communication
+
+This document is the architectural source of truth.
+
+---
+
+# 2. Architectural Principles
+
+1. Modular
+
+Every subsystem is independently replaceable.
+
+---
+
+2. Stateless APIs
+
+FastAPI servers remain stateless.
+
+State is stored only in databases.
+
+---
+
+3. Asynchronous Processing
+
+Long running scans never block HTTP requests.
+
+---
+
+4. AI is advisory
+
+LLMs never create findings.
+
+Static analysis tools remain the source of truth.
+
+---
+
+5. Explainability
+
+Every AI response must cite evidence.
+
+---
+
+6. Replaceability
+
+Every external dependency can be replaced without changing business logic.
+
+---
+
+# 3. C4 Context Diagram
+
+```text
+                        Developer
+
+                            │
+
+                     Web Dashboard
+
+                            │
+
+                    Sentinel Backend
+
+                            │
+
+ ┌───────────────┬───────────────┬──────────────┐
+
+ GitHub       Gemini API      Static Tools
+
+                            │
+
+                     PostgreSQL
+
+                            │
+
+                      ChromaDB
+
+                            │
+
+                         Redis
+```
+
+---
+
+# 4. Container Diagram
+
+```text
+Browser
+
+↓
+
+Next.js Frontend
+
+↓
+
+FastAPI Backend
+
+↓
+
+API Gateway
+
+↓
+
+Application Services
+
+↓
+
+Security Pipeline
+
+↓
+
+Storage Layer
+```
+
+---
+
+# 5. Component Diagram
+
+Application Services
+
+Repository Service
+
+↓
+
+Parser Service
+
+↓
+
+Embedding Service
+
+↓
+
+Security Service
+
+↓
+
+Reasoning Service
+
+↓
+
+Risk Service
+
+↓
+
+Reporting Service
+
+---
+
+# 6. Scan Lifecycle
+
+User
+
+↓
+
+Paste GitHub URL
+
+↓
+
+Repository Created
+
+↓
+
+Scan Requested
+
+↓
+
+Job Queued
+
+↓
+
+Worker Picks Job
+
+↓
+
+Clone Repository
+
+↓
+
+Parse Repository
+
+↓
+
+Extract Metadata
+
+↓
+
+Store Metadata
+
+↓
+
+Generate Embeddings
+
+↓
+
+Run Security Tools
+
+↓
+
+Normalize Results
+
+↓
+
+LLM Explanation
+
+↓
+
+Risk Scoring
+
+↓
+
+Generate Dashboard
+
+↓
+
+Store Report
+
+↓
+
+Notify User
+
+---
+
+# 7. Sequence Diagram
+
+Developer
+
+↓
+
+Frontend
+
+↓
+
+FastAPI
+
+↓
+
+Redis Queue
+
+↓
+
+Worker
+
+↓
+
+GitHub
+
+↓
+
+Repository Parser
+
+↓
+
+Security Scanner
+
+↓
+
+Gemini
+
+↓
+
+Database
+
+↓
+
+Frontend
+
+---
+
+# 8. Data Flow
+
+GitHub Repository
+
+↓
+
+Git Clone
+
+↓
+
+Local Workspace
+
+↓
+
+Tree-sitter
+
+↓
+
+Repository Metadata
+
+↓
+
+PostgreSQL
+
+↓
+
+Embeddings
+
+↓
+
+ChromaDB
+
+↓
+
+Semgrep
+
+↓
+
+Bandit
+
+↓
+
+Gitleaks
+
+↓
+
+Findings
+
+↓
+
+Normalizer
+
+↓
+
+Gemini
+
+↓
+
+Risk Engine
+
+↓
+
+Dashboard
+
+---
+
+# 9. Trust Boundaries
+
+Boundary 1
+
+Internet
+
+↓
+
+GitHub
+
+---
+
+Boundary 2
+
+Application
+
+↓
+
+FastAPI
+
+↓
+
+Workers
+
+---
+
+Boundary 3
+
+Storage
+
+↓
+
+PostgreSQL
+
+↓
+
+Redis
+
+↓
+
+ChromaDB
+
+---
+
+Boundary 4
+
+External AI
+
+↓
+
+Gemini API
+
+---
+
+# 10. Security Model
+
+Repositories never permanently stored.
+
+Temporary clone directory.
+
+Automatically deleted after scan.
+
+Secrets never logged.
+
+Prompt contains only required code snippets.
+
+Every external API request authenticated.
+
+---
+
+# 11. Repository Intelligence
+
+Produces
+
+Repository Profile
+
+Languages
+
+Frameworks
+
+Dependencies
+
+File Tree
+
+Authentication Modules
+
+Database Modules
+
+API Endpoints
+
+Architecture Graph
+
+---
+
+# 12. Static Analysis Layer
+
+Runs
+
+Semgrep
+
+Bandit
+
+Gitleaks
+
+pip-audit
+
+Output
+
+Normalized Findings
+
+---
+
+# 13. AI Reasoning Layer
+
+Input
+
+Finding
+
+Relevant Code
+
+Repository Metadata
+
+Output
+
+Explanation
+
+Impact
+
+Confidence
+
+Recommendation
+
+LLM cannot introduce new vulnerabilities.
+
+---
+
+# 14. Risk Engine
+
+Calculates
+
+Repository Score
+
+Critical Count
+
+High Count
+
+Medium Count
+
+Low Count
+
+Health Grade
+
+---
+
+# 15. Report Generator
+
+Outputs
+
+Dashboard
+
+Markdown
+
+JSON
+
+HTML
+
+Future
+
+PDF
+
+SARIF
+
+---
+
+# 16. Storage Architecture
+
+PostgreSQL
+
+Users
+
+Repositories
+
+Scans
+
+Files
+
+Metadata
+
+Findings
+
+Reports
+
+Audit Logs
+
+---
+
+ChromaDB
+
+Function Embeddings
+
+Class Embeddings
+
+Documentation Embeddings
+
+Repository Summaries
+
+---
+
+Redis
+
+Scan Queue
+
+Caching
+
+Job State
+
+---
+
+# 17. Background Workers
+
+Repository Worker
+
+↓
+
+Parser Worker
+
+↓
+
+Embedding Worker
+
+↓
+
+Security Worker
+
+↓
+
+Reasoning Worker
+
+↓
+
+Reporting Worker
+
+Each worker independently retryable.
+
+---
+
+# 18. Failure Recovery
+
+Clone failure
+
+↓
+
+Retry
+
+Parser failure
+
+↓
+
+Continue with partial scan
+
+LLM failure
+
+↓
+
+Return raw findings
+
+Security tool failure
+
+↓
+
+Continue remaining tools
+
+---
+
+# 19. Deployment Diagram
+
+```text
+Internet
+
+↓
+
+Cloudflare
+
+↓
+
+Next.js
+
+↓
+
+FastAPI
+
+↓
+
+Redis
+
+↓
+
+Celery
+
+↓
+
+PostgreSQL
+
+↓
+
+ChromaDB
+
+↓
+
+Gemini API
+```
+
+---
+
+# 20. Observability
+
+OpenTelemetry
+
+Structured Logs
+
+Request IDs
+
+Scan IDs
+
+Worker IDs
+
+Future
+
+Prometheus
+
+Grafana
+
+---
+
+# 21. Threat Model
+
+Threat
+
+Malicious Repository
+
+Mitigation
+
+Sandbox execution
+
+---
+
+Threat
+
+Prompt Injection
+
+Mitigation
+
+Prompt isolation
+
+---
+
+Threat
+
+Secret Leakage
+
+Mitigation
+
+Redaction
+
+---
+
+Threat
+
+Large Repository DOS
+
+Mitigation
+
+Repository Size Limit
+
+---
+
+Threat
+
+LLM Hallucination
+
+Mitigation
+
+Evidence-only prompting
+
+---
+
+# 22. Agent Interaction
+
+Repository Agent
+
+↓
+
+Parser Agent
+
+↓
+
+Security Agent
+
+↓
+
+Normalizer Agent
+
+↓
+
+Reasoning Agent
+
+↓
+
+Risk Agent
+
+↓
+
+Reporting Agent
+
+Agents communicate only through typed models.
+
+No agent calls another directly.
+
+Communication occurs via orchestrator.
+
+---
+
+# 23. Request Lifecycle
+
+Every request receives
+
+Trace ID
+
+↓
+
+Scan ID
+
+↓
+
+Repository ID
+
+↓
+
+Worker ID
+
+↓
+
+Audit Log
+
+---
+
+# 24. Coding Constraints
+
+No business logic inside API routes.
+
+No direct database access from agents.
+
+No AI calls from controllers.
+
+No duplicated prompts.
+
+Dependency injection only.
+
+---
+
+# 25. Future Architecture
+
+Additional containers
+
+GitHub App
+
+VS Code Extension
+
+Slack Bot
+
+CLI
+
+Enterprise Scanner
+
+Policy Engine
+
+Auto PR Engine
+
+These integrate without modifying existing modules.
+
+---
+
+# 26. Architecture Definition of Done
+
+Architecture is complete when
+
+Every component has one responsibility.
+
+Every dependency is replaceable.
+
+Every service has tests.
+
+Every communication path is documented.
+
+Every trust boundary is defined.
+
+Every failure mode has recovery.
+
+Every external integration is abstracted.
