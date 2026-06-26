@@ -1,0 +1,671 @@
+# CLAUDE.md
+
+> **Sentinel AI Engineering Constitution**
+>
+> This document is the highest-priority engineering guide for this repository.
+>
+> Claude must follow these rules before writing any code.
+>
+> If this document conflicts with an implementation idea, **this document wins**.
+
+---
+
+# 1. Mission
+
+Build **Sentinel AI**, an AI-powered GitHub security reviewer that analyzes repositories, detects vulnerabilities using static analysis, enriches findings with AI reasoning, and generates production-quality security reports.
+
+The goal is **not** to build a chatbot.
+
+The goal is to build a reliable software product.
+
+---
+
+# 2. Engineering Principles
+
+Always optimize for:
+
+* Correctness over speed
+* Readability over cleverness
+* Simplicity over abstraction
+* Explicitness over magic
+* Type safety over convenience
+* Production quality over demo quality
+
+Never write code that only works "for now."
+
+---
+
+# 3. Project Architecture
+
+Never invent a new architecture.
+
+Use exactly:
+
+```text
+Frontend (Next.js)
+
+↓
+
+REST API
+
+↓
+
+FastAPI
+
+↓
+
+Service Layer
+
+↓
+
+Repositories
+
+↓
+
+PostgreSQL
+
+↓
+
+Redis
+
+↓
+
+Celery Workers
+
+↓
+
+Tree-sitter
+
+Semgrep
+
+Bandit
+
+Gitleaks
+
+pip-audit
+
+↓
+
+Gemini
+
+↓
+
+ChromaDB
+```
+
+Never bypass the Service Layer.
+
+---
+
+# 4. Tech Stack
+
+## Frontend
+
+* Next.js 15
+* TypeScript
+* Tailwind CSS
+* shadcn/ui
+* TanStack Query
+* Zustand
+* React Hook Form
+* Zod
+
+## Backend
+
+* Python 3.12
+* FastAPI
+* SQLAlchemy
+* Alembic
+* Pydantic v2
+* Celery
+* Redis
+* PostgreSQL
+
+## AI
+
+* Gemini 2.5 Pro
+* Google text-embedding-004
+* ChromaDB
+
+## Security
+
+* Semgrep
+* Bandit
+* Gitleaks
+* pip-audit
+* Tree-sitter
+
+Do not substitute technologies unless explicitly requested.
+
+---
+
+# 5. Folder Structure
+
+```text
+backend/
+
+frontend/
+
+docs/
+
+docker/
+
+scripts/
+
+tests/
+
+.github/
+
+```
+
+Backend
+
+```text
+app/
+
+api/
+
+core/
+
+models/
+
+schemas/
+
+services/
+
+repositories/
+
+workers/
+
+agents/
+
+security/
+
+parsers/
+
+embeddings/
+
+utils/
+
+```
+
+Frontend
+
+```text
+app/
+
+components/
+
+features/
+
+hooks/
+
+stores/
+
+services/
+
+types/
+
+```
+
+Do not create arbitrary folders.
+
+---
+
+# 6. Layer Responsibilities
+
+## API Layer
+
+Responsibilities:
+
+* Validate requests
+* Call services
+* Return responses
+
+Must NOT:
+
+* Access database directly
+* Execute AI
+* Run scanners
+* Parse repositories
+
+---
+
+## Service Layer
+
+Contains business logic.
+
+Allowed to:
+
+* Coordinate repositories
+* Call workers
+* Execute AI
+* Build responses
+
+Must remain framework-independent.
+
+---
+
+## Repository Layer
+
+Responsible only for database access.
+
+Never place business logic here.
+
+---
+
+## Worker Layer
+
+Responsible for:
+
+* Long-running scans
+* AI jobs
+* Embedding generation
+* Static analysis
+
+Workers communicate via Celery.
+
+---
+
+# 7. Coding Standards
+
+Always:
+
+* Use type hints
+* Use dataclasses or Pydantic models where appropriate
+* Write docstrings for public functions
+* Keep functions under ~50 lines when practical
+* Prefer composition over inheritance
+* Use dependency injection
+* Favor pure functions
+
+Never:
+
+* Use global mutable state
+* Write deeply nested logic
+* Duplicate business logic
+* Suppress exceptions silently
+* Use `print()` for logging
+
+---
+
+# 8. Naming Conventions
+
+Classes
+
+```python
+RepositoryScanner
+RiskEngine
+```
+
+Functions
+
+```python
+calculate_security_score()
+
+generate_report()
+```
+
+Variables
+
+```python
+repository_url
+finding_count
+```
+
+Constants
+
+```python
+MAX_SCAN_SIZE
+```
+
+Booleans
+
+```python
+is_public
+has_findings
+```
+
+---
+
+# 9. API Rules
+
+All endpoints:
+
+* RESTful
+* Versioned under `/api/v1`
+* JSON only
+* Typed request models
+* Typed response models
+
+Every response must follow:
+
+```json
+{
+  "success": true,
+  "message": "",
+  "data": {},
+  "meta": {}
+}
+```
+
+Never return raw exceptions.
+
+---
+
+# 10. Database Rules
+
+Use:
+
+* SQLAlchemy ORM
+* Alembic migrations
+* UUID primary keys
+* UTC timestamps
+
+Never:
+
+* Write raw SQL unless necessary
+* Skip migrations
+* Store derived values that can be calculated
+
+---
+
+# 11. AI Rules
+
+LLMs must:
+
+* Explain findings
+* Rank findings
+* Summarize reports
+
+LLMs must NOT:
+
+* Invent vulnerabilities
+* Change scanner output
+* Execute code
+* Guess missing evidence
+
+Every AI response must be validated against a schema.
+
+Temperature:
+
+```
+0.1
+```
+
+---
+
+# 12. Security Rules
+
+Never:
+
+* Execute repository code
+* Log secrets
+* Expose API keys
+* Trust user input
+* Disable validation
+
+Always:
+
+* Sanitize inputs
+* Validate GitHub URLs
+* Escape HTML
+* Use parameterized queries
+
+---
+
+# 13. Error Handling
+
+Every exception must:
+
+* Be logged
+* Include context
+* Return structured errors
+* Never expose stack traces to users
+
+---
+
+# 14. Logging
+
+Use structured logging.
+
+Include:
+
+* Request ID
+* Scan ID
+* User ID (future)
+* Timestamp
+* Duration
+* Severity
+
+Never log:
+
+* Secrets
+* Tokens
+* API keys
+
+---
+
+# 15. Testing Requirements
+
+Every feature requires:
+
+* Unit tests
+* Integration tests
+* Type checking
+* Linting
+
+Coverage:
+
+Backend ≥90%
+
+Frontend ≥80%
+
+Critical modules 100%
+
+No feature is complete without tests.
+
+---
+
+# 16. Performance Rules
+
+API response
+
+<300 ms (non-scan endpoints)
+
+Repository scan
+
+<5 minutes
+
+Avoid:
+
+* N+1 queries
+* Blocking I/O
+* Duplicate database calls
+
+Use async where appropriate.
+
+---
+
+# 17. Frontend Rules
+
+Use:
+
+* Server Components where appropriate
+* Client Components only when needed
+* shadcn/ui components
+* Tailwind CSS utilities
+
+Never:
+
+* Hardcode API URLs
+* Duplicate state
+* Fetch the same data multiple times
+
+---
+
+# 18. Component Rules
+
+Each component should:
+
+* Have one responsibility
+* Be reusable
+* Accept typed props
+* Avoid unnecessary state
+
+Maximum recommended component size:
+
+~250 lines
+
+---
+
+# 19. Git Rules
+
+Commit format:
+
+```text
+feat:
+
+fix:
+
+docs:
+
+refactor:
+
+test:
+
+perf:
+
+chore:
+```
+
+Example
+
+```text
+feat: add repository parser service
+```
+
+Never commit:
+
+* `.env`
+* Secrets
+* API keys
+* Build artifacts
+
+---
+
+# 20. Documentation Rules
+
+Every feature requires:
+
+* Updated documentation
+* API documentation
+* Architecture updates if needed
+
+README must always remain accurate.
+
+---
+
+# 21. Dependencies
+
+Before adding a dependency:
+
+1. Check if the standard library solves the problem.
+2. Check if an existing dependency already provides the feature.
+3. Justify why the new dependency is needed.
+
+Avoid unnecessary packages.
+
+---
+
+# 22. Code Generation Rules
+
+Before writing code:
+
+1. Read the relevant documentation.
+2. Follow existing patterns.
+3. Reuse utilities.
+4. Avoid creating duplicate abstractions.
+
+When generating code:
+
+* Write complete implementations.
+* Do not leave TODO placeholders unless explicitly requested.
+* Do not generate pseudocode.
+* Do not omit imports.
+* Ensure code compiles.
+
+---
+
+# 23. Pull Request Checklist
+
+Every PR must:
+
+* Pass CI
+* Pass tests
+* Pass linting
+* Pass type checking
+* Include documentation updates
+* Avoid breaking API contracts
+
+---
+
+# 24. Definition of Done
+
+A task is complete only when:
+
+* Feature implemented
+* Tests written
+* Documentation updated
+* Type checking passes
+* Linting passes
+* CI passes
+* No console warnings
+* No TODOs
+* No commented-out code
+
+---
+
+# 25. Things Claude Must Never Do
+
+* Never change the architecture without approval.
+* Never invent APIs.
+* Never ignore the documented folder structure.
+* Never introduce new frameworks.
+* Never bypass validation.
+* Never fabricate AI outputs.
+* Never expose secrets.
+* Never remove tests to make CI pass.
+* Never merge unrelated responsibilities into one class.
+* Never sacrifice maintainability for shorter code.
+
+---
+
+# 26. Preferred Development Workflow
+
+For every feature:
+
+1. Read the relevant design document (PRD/TRD/API/etc.).
+2. Design the data model.
+3. Implement backend logic.
+4. Write unit tests.
+5. Expose REST API.
+6. Integrate frontend.
+7. Write integration tests.
+8. Update documentation.
+9. Verify locally.
+10. Commit using conventional commits.
+
+Follow this workflow consistently throughout the project.
+
+---
+
+# 27. Final Rule
+
+When in doubt:
+
+1. Follow the architecture documents.
+2. Prefer explicit, typed, production-ready code.
+3. Ask for clarification rather than making assumptions.
+
+The objective is to build a maintainable, scalable, and production-quality security platform—not merely a demo that appears to work.

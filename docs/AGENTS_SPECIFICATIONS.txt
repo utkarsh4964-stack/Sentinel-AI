@@ -1,0 +1,633 @@
+# Sentinel AI
+
+# Agents Specification Document (Agents.md)
+
+**Version:** 1.0
+
+---
+
+# 1. Purpose
+
+This document defines every AI agent used within Sentinel AI.
+
+Each agent has:
+
+* A single responsibility
+* Defined inputs
+* Defined outputs
+* Strict operational boundaries
+* Prompt specification
+* Failure handling
+* Quality constraints
+
+Agents must never perform tasks outside their responsibility.
+
+The Scan Orchestrator coordinates all agents.
+
+Agents never call each other directly.
+
+---
+
+# 2. Multi-Agent Architecture
+
+```text
+                    Scan Orchestrator
+                            │
+        ┌───────────────────┼───────────────────┐
+        │                   │                   │
+ Repository Agent     Security Agent     Embedding Agent
+        │                   │                   │
+        └───────────────────┼───────────────────┘
+                            │
+                    Context Retrieval Agent
+                            │
+                    AI Reasoning Agent
+                            │
+                    Risk Assessment Agent
+                            │
+                    Report Generation Agent
+```
+
+---
+
+# 3. Agent Communication Rules
+
+Agents communicate only through typed models.
+
+Example
+
+```python
+RepositoryProfile
+
+↓
+
+SecurityFinding
+
+↓
+
+FindingContext
+
+↓
+
+AIExplanation
+
+↓
+
+RiskScore
+
+↓
+
+SecurityReport
+```
+
+Agents never exchange free-form text.
+
+---
+
+# 4. Scan Orchestrator
+
+Purpose
+
+Controls workflow.
+
+Responsibilities
+
+* Validate scan request
+* Execute pipeline
+* Retry failures
+* Manage progress
+* Coordinate workers
+
+Input
+
+Repository URL
+
+Output
+
+Completed Scan
+
+LLM
+
+Not required.
+
+---
+
+# 5. Repository Intelligence Agent
+
+Purpose
+
+Understand repository structure.
+
+Responsibilities
+
+* Detect languages
+* Detect frameworks
+* Identify project type
+* Extract metadata
+* Detect authentication modules
+* Detect databases
+* Detect API routes
+
+Input
+
+Repository Path
+
+Output
+
+Repository Profile
+
+Never
+
+Perform security analysis.
+
+---
+
+# Prompt
+
+You are a repository intelligence agent.
+
+Your only responsibility is understanding repository structure.
+
+Never discuss security.
+
+Never suggest code fixes.
+
+Only identify architecture and metadata.
+
+Output strictly follows the RepositoryProfile schema.
+
+---
+
+# 6. Parser Agent
+
+Purpose
+
+Generate semantic representation.
+
+Responsibilities
+
+* Parse AST using Tree-sitter
+* Extract classes
+* Extract functions
+* Extract imports
+* Extract methods
+* Extract decorators
+* Extract routes
+
+Input
+
+Source files
+
+Output
+
+Repository Symbols
+
+LLM
+
+Not required.
+
+---
+
+# 7. Embedding Agent
+
+Purpose
+
+Generate vector embeddings.
+
+Responsibilities
+
+* Chunk code
+* Generate embeddings
+* Store vectors
+* Attach metadata
+
+Input
+
+Repository Symbols
+
+Output
+
+Vector IDs
+
+LLM
+
+Not required.
+
+---
+
+# 8. Static Analysis Agent
+
+Purpose
+
+Run security scanners.
+
+Responsibilities
+
+Execute
+
+* Semgrep
+* Bandit
+* Gitleaks
+* pip-audit
+
+Normalize outputs.
+
+Input
+
+Repository Path
+
+Output
+
+Normalized Findings
+
+Never
+
+Explain findings.
+
+Never assign confidence.
+
+---
+
+# 9. Context Retrieval Agent
+
+Purpose
+
+Collect supporting evidence.
+
+Responsibilities
+
+Retrieve
+
+* Relevant code
+* Neighboring functions
+* Documentation
+* Imports
+* Related files
+* Architecture metadata
+
+Input
+
+Security Finding
+
+Output
+
+Finding Context
+
+Prompt
+
+Never explain.
+
+Only retrieve supporting evidence.
+
+---
+
+# 10. AI Security Reasoning Agent
+
+Purpose
+
+Explain findings.
+
+Responsibilities
+
+Explain
+
+Why issue exists
+
+Business impact
+
+Technical impact
+
+Severity reasoning
+
+Suggested remediation
+
+Input
+
+Finding Context
+
+Output
+
+AI Explanation
+
+---
+
+Prompt
+
+You are an application security engineer.
+
+Explain the provided security finding.
+
+Never invent vulnerabilities.
+
+Use only the supplied evidence.
+
+If evidence is insufficient, explicitly state uncertainty.
+
+Explain in language understandable by a junior software engineer.
+
+Return structured JSON only.
+
+---
+
+# 11. Risk Assessment Agent
+
+Purpose
+
+Prioritize findings.
+
+Responsibilities
+
+Assign
+
+Risk Score
+
+Priority
+
+Confidence
+
+Business Impact
+
+Technical Impact
+
+Input
+
+Finding
+
+AI Explanation
+
+Output
+
+Risk Assessment
+
+Prompt
+
+You prioritize security issues.
+
+Do not explain vulnerabilities.
+
+Assign numerical scores using only supplied evidence.
+
+Never invent information.
+
+---
+
+# 12. Report Generation Agent
+
+Purpose
+
+Generate user-facing reports.
+
+Responsibilities
+
+Generate
+
+Dashboard Summary
+
+Markdown
+
+JSON
+
+Executive Summary
+
+Developer Summary
+
+Input
+
+Risk Assessment
+
+Repository Profile
+
+Output
+
+Security Report
+
+Prompt
+
+Summarize findings clearly.
+
+Highlight critical issues first.
+
+Maintain factual accuracy.
+
+Do not introduce new findings.
+
+---
+
+# 13. Future Auto-Fix Agent
+
+Version 2
+
+Purpose
+
+Generate code patches.
+
+Responsibilities
+
+Generate
+
+Minimal code changes.
+
+Never modify unrelated code.
+
+Must preserve coding style.
+
+Not included in MVP.
+
+---
+
+# 14. Future PR Agent
+
+Purpose
+
+Create GitHub Pull Requests.
+
+Responsibilities
+
+Create
+
+Branch
+
+Commit
+
+PR Description
+
+Reviewer Notes
+
+Future only.
+
+---
+
+# 15. Agent Data Contracts
+
+Repository Agent
+
+↓
+
+RepositoryProfile
+
+↓
+
+Parser Agent
+
+↓
+
+RepositorySymbols
+
+↓
+
+Embedding Agent
+
+↓
+
+EmbeddingMetadata
+
+↓
+
+Static Analysis Agent
+
+↓
+
+SecurityFinding[]
+
+↓
+
+Context Retrieval Agent
+
+↓
+
+FindingContext
+
+↓
+
+Reasoning Agent
+
+↓
+
+AIExplanation
+
+↓
+
+Risk Agent
+
+↓
+
+RiskAssessment
+
+↓
+
+Report Agent
+
+↓
+
+SecurityReport
+
+---
+
+# 16. Prompt Engineering Rules
+
+Every prompt must:
+
+* Use system prompts.
+* Return JSON only.
+* Forbid markdown.
+* Forbid speculation.
+* Require evidence-based reasoning.
+* Explicitly reject unsupported conclusions.
+
+Temperature
+
+0.1
+
+Top P
+
+0.9
+
+Maximum Tokens
+
+4096
+
+---
+
+# 17. Failure Handling
+
+Repository Agent fails
+
+↓
+
+Abort Scan
+
+Parser fails
+
+↓
+
+Continue partial analysis
+
+Embedding fails
+
+↓
+
+Disable semantic retrieval
+
+Static Analysis fails
+
+↓
+
+Retry scanner
+
+Reasoning fails
+
+↓
+
+Return raw findings
+
+Report fails
+
+↓
+
+Generate minimal report
+
+---
+
+# 18. Security Constraints
+
+Agents must never:
+
+* Execute repository code.
+* Modify repositories.
+* Access secrets outside scan scope.
+* Invent vulnerabilities.
+* Ignore scanner output.
+* Make network requests except approved APIs.
+
+---
+
+# 19. Observability
+
+Every agent logs:
+
+* Agent ID
+* Scan ID
+* Start Time
+* End Time
+* Duration
+* Tokens Used (LLM agents)
+* Success/Failure
+* Retry Count
+
+---
+
+# 20. Definition of Done
+
+An agent is complete only if it includes:
+
+* Typed input model
+* Typed output model
+* System prompt
+* Unit tests
+* Integration tests
+* Logging
+* Retry strategy
+* Error handling
+* Documentation
+* JSON schema validation
+* No side effects outside its responsibility

@@ -1,0 +1,503 @@
+# CONTRIBUTING.md
+
+# Contributing to Sentinel AI
+
+Thank you for your interest in contributing to **Sentinel AI**.
+
+Sentinel AI is a production-grade AI-powered GitHub security reviewer. We aim to build software that is reliable, secure, maintainable, and developer-friendly.
+
+Please read this guide before contributing.
+
+---
+
+# 1. Code of Conduct
+
+Contributors should:
+
+* Be respectful.
+* Be constructive.
+* Review code professionally.
+* Welcome feedback.
+* Prioritize software quality over personal preferences.
+
+Harassment, discrimination, or abusive behavior will not be tolerated.
+
+---
+
+# 2. Before You Start
+
+Before writing code:
+
+1. Read the project documentation.
+2. Read `CLAUDE.md`.
+3. Review the relevant architecture document (PRD, TRD, API, etc.).
+4. Search existing issues and pull requests.
+5. Create an issue for significant changes before implementation.
+
+---
+
+# 3. Development Environment
+
+## Prerequisites
+
+* Git
+* Docker Desktop
+* Python 3.12
+* Node.js 22
+* pnpm
+
+Clone the repository:
+
+```bash
+git clone https://github.com/<your-username>/sentinel.git
+cd sentinel
+```
+
+Start the development environment:
+
+```bash
+docker compose up --build
+```
+
+Verify services:
+
+* Frontend → http://localhost:3000
+* Backend → http://localhost:8000/docs
+* PostgreSQL
+* Redis
+* ChromaDB
+
+---
+
+# 4. Branching Strategy
+
+Never commit directly to `main`.
+
+Use feature branches:
+
+```text
+feature/repository-parser
+feature/security-engine
+feature/ai-reasoning
+feature/report-generator
+
+fix/sql-injection-rule
+fix/api-validation
+
+docs/api-spec
+docs/readme
+
+refactor/service-layer
+
+test/parser-tests
+```
+
+---
+
+# 5. Commit Message Convention
+
+Use Conventional Commits.
+
+Examples:
+
+```text
+feat: add repository parser
+
+feat: integrate Semgrep scanner
+
+fix: resolve ChromaDB indexing bug
+
+docs: update API specification
+
+refactor: simplify risk engine
+
+test: add parser integration tests
+
+perf: optimize embedding retrieval
+
+chore: upgrade dependencies
+```
+
+Avoid vague messages such as:
+
+```text
+update
+
+changes
+
+fix
+
+done
+```
+
+---
+
+# 6. Pull Request Requirements
+
+Every Pull Request must:
+
+* Solve one logical problem.
+* Pass all CI checks.
+* Include tests.
+* Include documentation updates (if applicable).
+* Avoid unrelated formatting changes.
+* Be reviewed before merge.
+
+PR Template:
+
+* Summary
+* Motivation
+* Implementation Details
+* Testing Performed
+* Screenshots (if UI changes)
+* Checklist
+
+---
+
+# 7. Coding Standards
+
+## General
+
+Write readable code.
+
+Optimize for maintainability.
+
+Prefer explicit code over clever shortcuts.
+
+Avoid unnecessary abstraction.
+
+---
+
+## Python
+
+* Python 3.12
+* Type hints required
+* Pydantic v2 models
+* SQLAlchemy ORM
+* Black formatting
+* Ruff linting
+
+Example:
+
+```python
+def calculate_score(findings: list[Finding]) -> int:
+    ...
+```
+
+---
+
+## TypeScript
+
+* Strict mode enabled.
+* No `any`.
+* Prefer interfaces and typed props.
+* Avoid implicit types.
+
+Example:
+
+```ts
+interface FindingCardProps {
+  finding: Finding;
+}
+```
+
+---
+
+# 8. Formatting
+
+Backend:
+
+* Black
+* Ruff
+* isort
+
+Frontend:
+
+* ESLint
+* Prettier
+
+Run before committing:
+
+```bash
+make lint
+make format
+make test
+```
+
+---
+
+# 9. File Organization
+
+Backend:
+
+```text
+app/
+api/
+services/
+repositories/
+models/
+schemas/
+workers/
+agents/
+```
+
+Frontend:
+
+```text
+app/
+components/
+features/
+hooks/
+stores/
+services/
+```
+
+Do not create arbitrary folders.
+
+---
+
+# 10. Architecture Rules
+
+Follow the documented architecture.
+
+Do not:
+
+* Bypass the service layer.
+* Access the database from API routes.
+* Place business logic inside controllers.
+* Mix frontend and backend responsibilities.
+
+---
+
+# 11. API Standards
+
+All APIs must:
+
+* Live under `/api/v1`.
+* Use typed request/response models.
+* Return consistent JSON.
+* Include validation.
+* Be documented in OpenAPI.
+
+Never expose stack traces or internal exceptions.
+
+---
+
+# 12. Testing Requirements
+
+Every contribution must include appropriate tests.
+
+Required:
+
+* Unit tests
+* Integration tests (if applicable)
+* End-to-end tests for user-facing workflows
+
+Coverage targets:
+
+* Backend ≥90%
+* Frontend ≥80%
+
+Critical modules require 100% coverage.
+
+---
+
+# 13. Documentation
+
+Update documentation whenever you:
+
+* Add features
+* Modify APIs
+* Change architecture
+* Introduce configuration changes
+
+Relevant documents include:
+
+* README.md
+* API_Spec.md
+* TRD.md
+* Frontend_Spec.md
+* Testing_Strategy.md
+
+---
+
+# 14. Security Guidelines
+
+Never:
+
+* Commit `.env` files.
+* Commit secrets.
+* Commit API keys.
+* Disable validation.
+* Ignore security warnings.
+
+Run before submitting:
+
+```bash
+semgrep .
+
+bandit -r backend/
+
+gitleaks detect
+
+pip-audit
+```
+
+All high-severity issues must be resolved before merge.
+
+---
+
+# 15. AI Development Guidelines
+
+When modifying AI agents:
+
+* Keep prompts deterministic.
+* Return structured JSON.
+* Never invent vulnerabilities.
+* Base reasoning only on collected evidence.
+* Validate AI responses against schemas.
+
+Prompt changes require regression testing.
+
+---
+
+# 16. Dependency Policy
+
+Before adding a dependency:
+
+1. Can the standard library solve the problem?
+2. Can an existing dependency solve it?
+3. Is the package actively maintained?
+4. Is it compatible with the project license?
+
+Avoid unnecessary dependencies.
+
+---
+
+# 17. Performance Guidelines
+
+Contributors should:
+
+* Minimize database queries.
+* Avoid blocking I/O.
+* Use asynchronous APIs where appropriate.
+* Cache expensive operations.
+* Profile before optimizing.
+
+---
+
+# 18. Logging
+
+Use structured logging.
+
+Include:
+
+* Timestamp
+* Request ID
+* Scan ID
+* Severity
+
+Do not log:
+
+* Secrets
+* Tokens
+* API keys
+* Sensitive repository content
+
+---
+
+# 19. Issue Labels
+
+Use labels consistently:
+
+```text
+bug
+
+feature
+
+enhancement
+
+documentation
+
+good first issue
+
+help wanted
+
+security
+
+performance
+
+refactor
+
+testing
+```
+
+---
+
+# 20. Review Checklist
+
+Before requesting review:
+
+* Code builds successfully.
+* Tests pass.
+* Linting passes.
+* Type checking passes.
+* Documentation updated.
+* No TODOs remain.
+* No commented-out code.
+* No debug logging.
+* No merge conflicts.
+
+---
+
+# 21. Merge Policy
+
+A pull request may be merged only if:
+
+* CI passes.
+* At least one review is approved.
+* Coverage targets are maintained.
+* Documentation is updated.
+* No critical security issues remain.
+
+---
+
+# 22. Release Process
+
+Before each release:
+
+1. Update version.
+2. Update changelog.
+3. Run full test suite.
+4. Run security scans.
+5. Verify deployment.
+6. Tag the release.
+7. Publish release notes.
+
+---
+
+# 23. Contributor Recognition
+
+All meaningful contributors will be listed in:
+
+* CONTRIBUTORS.md
+* GitHub Releases
+* Project documentation
+
+---
+
+# 24. Definition of Done
+
+A contribution is complete only when:
+
+* Code is implemented.
+* Tests pass.
+* CI passes.
+* Documentation is updated.
+* Architecture is respected.
+* Code is reviewed.
+* No security issues remain.
+* Performance impact is acceptable.
+* The feature works end-to-end.
+
+Thank you for helping build Sentinel AI into a secure, reliable, and production-quality platform.
