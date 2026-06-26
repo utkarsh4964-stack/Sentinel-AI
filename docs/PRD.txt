@@ -1,0 +1,602 @@
+# Sentinel AI
+
+# Product Requirements Document (PRD)
+
+## Version 1.0 (MVP)
+
+---
+
+# 1. Product Overview
+
+## Product Name
+
+Sentinel AI
+
+## Product Type
+
+AI-powered Security Review Platform for GitHub Repositories and AI-Generated Applications.
+
+## Product Goal
+
+Enable developers to discover, understand, and fix security vulnerabilities in their software before deployment using a combination of static analysis, repository understanding, and LLM reasoning.
+
+---
+
+# 2. Problem Statement
+
+Modern developers increasingly rely on AI coding tools such as Claude Code, Cursor, GitHub Copilot, and Lovable.
+
+These tools generate software quickly but often introduce:
+
+* Security vulnerabilities
+* Exposed secrets
+* Broken authentication
+* Poor authorization
+* Dangerous AI workflows
+* Technical debt
+
+Existing security tools generate findings but rarely explain:
+
+* Why the issue exists
+* Its business impact
+* How to fix it
+* Whether it is a false positive
+
+Sentinel solves this gap.
+
+---
+
+# 3. Product Objectives
+
+The MVP must allow a developer to:
+
+✓ Connect a GitHub repository
+
+✓ Scan the repository
+
+✓ Detect security issues
+
+✓ Explain each issue
+
+✓ Prioritize issues
+
+✓ Suggest code fixes
+
+The MVP will NOT automatically modify repositories.
+
+---
+
+# 4. Target Users
+
+Primary
+
+* Solo developers
+* Students
+* Startup founders
+* Indie hackers
+* AI application builders
+
+Secondary
+
+* Engineering teams
+* Security engineers
+* CTOs
+
+---
+
+# 5. User Personas
+
+## Persona A
+
+Student Developer
+
+"I built an app with Cursor.
+I don't know whether it's secure."
+
+Needs
+
+* Easy explanations
+* Beginner-friendly language
+* Suggested fixes
+
+---
+
+## Persona B
+
+Startup Founder
+
+"I need confidence before deploying."
+
+Needs
+
+* Fast scans
+* Risk score
+* Prioritized issues
+
+---
+
+## Persona C
+
+Security Engineer
+
+"I need evidence."
+
+Needs
+
+* Technical details
+* File references
+* Confidence score
+* Severity
+
+---
+
+# 6. Success Criteria
+
+A successful scan should produce:
+
+Repository Summary
+
+Security Score
+
+List of Findings
+
+AI Explanation
+
+Suggested Fix
+
+Execution Time
+
+---
+
+# 7. Functional Requirements
+
+## FR-001
+
+GitHub Repository Import
+
+User enters
+
+Repository URL
+
+System validates repository.
+
+Supports
+
+* Public repositories
+
+Private repositories are out of scope for MVP.
+
+---
+
+## FR-002
+
+Repository Cloning
+
+System clones repository.
+
+Repository stored temporarily.
+
+Deleted after analysis.
+
+---
+
+## FR-003
+
+Repository Understanding
+
+System extracts:
+
+* Directory structure
+* Languages
+* Frameworks
+* Dependencies
+* API routes
+* Authentication modules
+* Database access
+
+Output:
+
+Repository Profile
+
+---
+
+## FR-004
+
+Security Scan
+
+Run static analyzers.
+
+Supported tools
+
+* Semgrep
+* Bandit
+* Gitleaks
+
+Aggregate findings.
+
+Normalize output.
+
+---
+
+## FR-005
+
+AI Security Explanation
+
+For every finding generate:
+
+Title
+
+Severity
+
+Why it matters
+
+Business impact
+
+Technical explanation
+
+Recommended fix
+
+Confidence
+
+Affected files
+
+---
+
+## FR-006
+
+Security Score
+
+Generate a score between:
+
+0–100
+
+Score considers:
+
+Critical findings
+
+High findings
+
+Medium findings
+
+Secret exposure
+
+Authentication issues
+
+---
+
+## FR-007
+
+Dashboard
+
+Display
+
+Repository Summary
+
+Security Score
+
+Issue Count
+
+Severity Distribution
+
+Finding List
+
+---
+
+## FR-008
+
+Finding Detail Page
+
+Every finding includes
+
+Description
+
+Affected files
+
+Code snippet
+
+Explanation
+
+Suggested remediation
+
+References
+
+---
+
+## FR-009
+
+Export Report
+
+Generate
+
+Markdown report
+
+JSON report
+
+PDF is out of scope.
+
+---
+
+# 8. Non-Functional Requirements
+
+Scan should finish within
+
+5 minutes
+
+for repositories under
+
+5,000 files.
+
+System availability
+
+99%
+
+Response latency
+
+<2 seconds
+
+Dashboard
+
+Responsive
+
+Desktop-first
+
+---
+
+# 9. Supported Languages (MVP)
+
+Python
+
+JavaScript
+
+TypeScript
+
+TSX
+
+JSX
+
+Everything else ignored.
+
+---
+
+# 10. Supported Vulnerabilities
+
+Authentication
+
+Authorization
+
+Hardcoded secrets
+
+SQL Injection
+
+Command Injection
+
+XSS
+
+CSRF
+
+Unsafe subprocess
+
+Weak JWT configuration
+
+Exposed environment variables
+
+Dependency vulnerabilities
+
+---
+
+# 11. AI-Specific Checks (Experimental)
+
+Prompt Injection
+
+Unsafe tool execution
+
+Dangerous eval()
+
+Hardcoded LLM API keys
+
+Unsafe file upload
+
+Missing output validation
+
+Prompt leakage
+
+These are advisory only in MVP.
+
+---
+
+# 12. User Flow
+
+User lands on dashboard
+
+↓
+
+Paste GitHub URL
+
+↓
+
+Click Scan
+
+↓
+
+Repository imported
+
+↓
+
+Repository parsed
+
+↓
+
+Security tools execute
+
+↓
+
+LLM explains findings
+
+↓
+
+Dashboard generated
+
+↓
+
+User explores findings
+
+↓
+
+Exports report
+
+---
+
+# 13. Out of Scope (MVP)
+
+GitHub OAuth
+
+Private repositories
+
+Automatic pull requests
+
+Automatic code fixes
+
+Continuous monitoring
+
+Background scheduling
+
+Multi-user workspaces
+
+Enterprise SSO
+
+IDE plugins
+
+Slack integration
+
+VS Code extension
+
+Compliance reports
+
+---
+
+# 14. Risks
+
+Large repositories
+
+False positives
+
+LLM hallucinations
+
+Unsupported languages
+
+API rate limits
+
+Long scan duration
+
+Mitigation:
+
+Static analysis remains the source of truth.
+
+LLM only explains and prioritizes findings.
+
+---
+
+# 15. MVP Deliverables
+
+Working Web Application
+
+Repository Scanner
+
+Repository Intelligence Engine
+
+Security Dashboard
+
+Finding Detail Page
+
+Export Reports
+
+Documentation
+
+Docker Deployment
+
+CI Pipeline
+
+Unit Tests
+
+Integration Tests
+
+---
+
+# 16. Product Metrics
+
+Repositories Scanned
+
+Average Scan Time
+
+Critical Issues Detected
+
+Average Security Score
+
+Reports Exported
+
+Daily Active Users
+
+---
+
+# 17. Acceptance Criteria
+
+The MVP is complete when a user can:
+
+1. Paste a public GitHub repository URL.
+
+2. Receive a repository summary.
+
+3. Receive a security score.
+
+4. View categorized vulnerabilities.
+
+5. Read AI explanations for every finding.
+
+6. Export a Markdown report.
+
+7. Complete the entire workflow without using the terminal.
+
+---
+
+# 18. Future Features (Not MVP)
+
+GitHub App
+
+Pull Request Reviews
+
+Auto-generated Fixes
+
+One-click Pull Requests
+
+Continuous Monitoring
+
+Architecture Intelligence
+
+Dependency Graphs
+
+Security Trends
+
+AI Engineering Assistant
+
+Multi-Agent Workflow
+
+Enterprise Dashboard
+
+SOC2 Reporting
+
+Custom Security Policies
+
+---
+
+# 19. Definition of Success
+
+A developer with no security expertise should be able to scan a repository and understand:
+
+* What security problems exist
+* Why they matter
+* Which problems should be fixed first
+* How to begin fixing them
+
+without reading documentation for Semgrep, Bandit, or other security tools.
+
+If Sentinel achieves this, the MVP has succeeded.

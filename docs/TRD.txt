@@ -1,0 +1,865 @@
+# Sentinel AI
+
+# Technical Requirements Document (TRD)
+
+## Version 1.0 (MVP)
+
+---
+
+# 1. Purpose
+
+This document defines the complete technical architecture, implementation constraints, module boundaries, technology stack, coding standards, APIs, storage, agent responsibilities, and development rules for Sentinel AI MVP.
+
+The objective is to eliminate architectural ambiguity and prevent implementation drift.
+
+---
+
+# 2. Architecture Philosophy
+
+Sentinel follows a modular, layered architecture.
+
+Each layer has a single responsibility.
+
+```
+Presentation Layer
+
+↓
+
+API Layer
+
+↓
+
+Application Layer
+
+↓
+
+Security Intelligence Pipeline
+
+↓
+
+Infrastructure Layer
+```
+
+No layer may bypass another layer.
+
+---
+
+# 3. High-Level Architecture
+
+```
+                    Next.js Frontend
+                           │
+                    REST API (FastAPI)
+                           │
+                 Authentication Middleware
+                           │
+                  Scan Orchestrator Service
+                           │
+      ┌──────────────┬──────────────┬──────────────┐
+      │              │              │
+ Repository      Static Scan    AI Reasoning
+ Intelligence      Engine          Engine
+      │              │              │
+      └──────────────┴──────────────┘
+                     │
+             Findings Normalizer
+                     │
+              Report Generator
+                     │
+              PostgreSQL
+                     │
+                 ChromaDB
+```
+
+---
+
+# 4. Technology Stack
+
+## Frontend
+
+Next.js 15
+
+React
+
+TypeScript
+
+Tailwind CSS
+
+Shadcn UI
+
+TanStack Query
+
+React Flow
+
+Recharts
+
+---
+
+## Backend
+
+Python 3.12
+
+FastAPI
+
+Pydantic v2
+
+SQLAlchemy
+
+Alembic
+
+Celery
+
+Redis
+
+---
+
+## AI
+
+Gemini 2.5 Pro
+
+Google text-embedding-004
+
+LangGraph
+
+---
+
+## Repository Analysis
+
+GitPython
+
+Tree-sitter
+
+NetworkX
+
+---
+
+## Static Analysis
+
+Semgrep
+
+Bandit
+
+Gitleaks
+
+pip-audit
+
+---
+
+## Databases
+
+PostgreSQL
+
+ChromaDB
+
+Redis
+
+---
+
+## Infrastructure
+
+Docker
+
+Docker Compose
+
+GitHub Actions
+
+Railway (MVP)
+
+---
+
+# 5. Folder Structure
+
+```
+sentinel/
+
+backend/
+
+frontend/
+
+docs/
+
+docker/
+
+scripts/
+
+.github/
+
+README.md
+
+LICENSE
+
+```
+
+Backend
+
+```
+backend/
+
+api/
+
+core/
+
+config/
+
+models/
+
+schemas/
+
+services/
+
+agents/
+
+repositories/
+
+workers/
+
+utils/
+
+tests/
+
+```
+
+Frontend
+
+```
+frontend/
+
+app/
+
+components/
+
+hooks/
+
+services/
+
+types/
+
+lib/
+
+```
+
+---
+
+# 6. Core Modules
+
+Module 1
+
+Repository Service
+
+Responsibilities
+
+Clone repositories
+
+Read file tree
+
+Identify languages
+
+Calculate repository metadata
+
+---
+
+Module 2
+
+Parser Service
+
+Responsibilities
+
+Tree-sitter parsing
+
+Extract
+
+Functions
+
+Classes
+
+Imports
+
+Endpoints
+
+Store metadata
+
+---
+
+Module 3
+
+Embedding Service
+
+Responsibilities
+
+Chunk repository
+
+Generate embeddings
+
+Store vectors
+
+Query vectors
+
+---
+
+Module 4
+
+Static Analysis Service
+
+Responsibilities
+
+Execute
+
+Semgrep
+
+Bandit
+
+Gitleaks
+
+Normalize outputs
+
+---
+
+Module 5
+
+LLM Security Reasoner
+
+Responsibilities
+
+Explain findings
+
+Assign confidence
+
+Estimate impact
+
+Suggest remediation
+
+Never invent findings
+
+---
+
+Module 6
+
+Risk Engine
+
+Responsibilities
+
+Calculate
+
+Security Score
+
+Priority
+
+Severity
+
+Overall repository health
+
+---
+
+Module 7
+
+Report Generator
+
+Responsibilities
+
+Markdown
+
+JSON
+
+HTML
+
+---
+
+# 7. Scan Pipeline
+
+```
+Repository URL
+
+↓
+
+Validation
+
+↓
+
+Clone Repository
+
+↓
+
+Parse Repository
+
+↓
+
+Extract Metadata
+
+↓
+
+Chunk Code
+
+↓
+
+Generate Embeddings
+
+↓
+
+Run Static Analysis
+
+↓
+
+Normalize Findings
+
+↓
+
+Retrieve Context
+
+↓
+
+LLM Explanation
+
+↓
+
+Risk Scoring
+
+↓
+
+Generate Report
+
+↓
+
+Store Results
+```
+
+---
+
+# 8. Database Design
+
+PostgreSQL
+
+Repositories
+
+Scans
+
+Files
+
+Functions
+
+Classes
+
+Findings
+
+Reports
+
+Users
+
+Settings
+
+---
+
+ChromaDB
+
+Collection
+
+Repository Embeddings
+
+Metadata
+
+repository_id
+
+file_path
+
+symbol
+
+language
+
+chunk_id
+
+---
+
+Redis
+
+Background jobs
+
+Task queue
+
+Caching
+
+---
+
+# 9. API Endpoints
+
+POST
+
+/api/v1/repositories
+
+Import repository
+
+---
+
+POST
+
+/api/v1/scans
+
+Start scan
+
+---
+
+GET
+
+/api/v1/scans/{id}
+
+Scan status
+
+---
+
+GET
+
+/api/v1/findings
+
+All findings
+
+---
+
+GET
+
+/api/v1/findings/{id}
+
+Finding details
+
+---
+
+GET
+
+/api/v1/report/{id}
+
+Export report
+
+---
+
+GET
+
+/api/v1/repository/{id}
+
+Repository overview
+
+---
+
+# 10. Security Intelligence Pipeline
+
+Stage 1
+
+Repository Intelligence
+
+↓
+
+Stage 2
+
+Metadata Extraction
+
+↓
+
+Stage 3
+
+Static Analysis
+
+↓
+
+Stage 4
+
+Finding Normalization
+
+↓
+
+Stage 5
+
+AI Explanation
+
+↓
+
+Stage 6
+
+Risk Prioritization
+
+↓
+
+Stage 7
+
+Report Generation
+
+---
+
+# 11. Agent Design
+
+Repository Agent
+
+Clone
+
+Parse
+
+Summarize
+
+---
+
+Security Agent
+
+Collect findings
+
+Merge duplicates
+
+Categorize
+
+---
+
+Reasoning Agent
+
+Explain
+
+Estimate impact
+
+Recommend fix
+
+---
+
+Reporting Agent
+
+Generate dashboard
+
+Generate markdown
+
+Generate JSON
+
+---
+
+# 12. Coding Standards
+
+Python
+
+Black
+
+Ruff
+
+isort
+
+100% typing
+
+No Any
+
+---
+
+Frontend
+
+ESLint
+
+Prettier
+
+Strict TypeScript
+
+---
+
+Naming
+
+snake_case
+
+Python
+
+camelCase
+
+TypeScript
+
+PascalCase
+
+Components
+
+---
+
+# 13. Error Handling
+
+Never expose stack traces.
+
+Every API returns
+
+status
+
+message
+
+error_code
+
+request_id
+
+---
+
+# 14. Logging
+
+Use structured JSON logging.
+
+Levels
+
+INFO
+
+WARNING
+
+ERROR
+
+CRITICAL
+
+Every scan gets unique trace ID.
+
+---
+
+# 15. Background Processing
+
+Long-running scans execute through Celery workers.
+
+API never blocks.
+
+Progress stored in PostgreSQL.
+
+---
+
+# 16. Performance Targets
+
+Clone
+
+<30 seconds
+
+Parsing
+
+<60 seconds
+
+Security Scan
+
+<120 seconds
+
+LLM Explanation
+
+<60 seconds
+
+Total
+
+<5 minutes
+
+---
+
+# 17. Testing Strategy
+
+Backend
+
+pytest
+
+Coverage
+
+90%
+
+Frontend
+
+Playwright
+
+Vitest
+
+Integration
+
+Docker Compose
+
+---
+
+# 18. CI/CD
+
+GitHub Actions
+
+Pipeline
+
+Lint
+
+↓
+
+Type Check
+
+↓
+
+Unit Tests
+
+↓
+
+Integration Tests
+
+↓
+
+Docker Build
+
+↓
+
+Deploy Railway
+
+---
+
+# 19. Constraints
+
+Never allow LLM to generate vulnerabilities.
+
+Static analyzers are the source of truth.
+
+LLM only:
+
+Explains
+
+Prioritizes
+
+Recommends
+
+No autonomous repository modification.
+
+---
+
+# 20. Extensibility
+
+Every module must be replaceable.
+
+Examples
+
+Semgrep
+
+↓
+
+CodeQL
+
+No architecture changes.
+
+Gemini
+
+↓
+
+Another reasoning model
+
+No business logic changes.
+
+Tree-sitter
+
+↓
+
+Alternative parser
+
+No pipeline changes.
+
+---
+
+# 21. Definition of Done
+
+A feature is complete only if it includes:
+
+Production implementation
+
+Unit tests
+
+Integration tests
+
+API documentation
+
+Logging
+
+Error handling
+
+Type hints
+
+Documentation
+
+Docker compatibility
+
+CI passing
+
+No TODOs
+
+No placeholder code
+
+No mocked business logic
